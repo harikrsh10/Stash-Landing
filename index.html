@@ -16,7 +16,6 @@
 
 <style>
   :root {
-    /* Pulled directly from the Stash app for visual continuity */
     --bg: #0a0a0a;
     --surface: #111;
     --surface-2: #1a1a1a;
@@ -26,10 +25,9 @@
     --text-2: #b8b8b8;
     --muted: #666;
     --muted-2: #444;
-    --accent: #f8f4ec;        /* Warm off-white from the icon */
+    --accent: #f8f4ec;
     --accent-dim: rgba(248, 244, 236, 0.06);
 
-    /* Type-badge tints, lifted from the app — used sparingly as accent color */
     --tint-code: #a0a0ff;
     --tint-url: #6dbf8c;
     --tint-img: #d4a06a;
@@ -50,7 +48,6 @@
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Subtle grain — adds depth without decoration */
     background-image:
       radial-gradient(ellipse at top, rgba(255,255,255,0.015) 0%, transparent 60%),
       url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.018 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
@@ -59,7 +56,6 @@
   a { color: inherit; text-decoration: none; }
   ::selection { background: var(--accent); color: var(--bg); }
 
-  /* ── Layout ─────────────────────────────────────────────────────── */
   .container {
     max-width: 980px;
     margin: 0 auto;
@@ -69,7 +65,7 @@
     .container { padding: 0 20px; }
   }
 
-  /* ── Nav ─────────────────────────────────────────────────────────── */
+  /* Nav */
   .nav {
     padding: 28px 0;
     display: flex;
@@ -108,9 +104,7 @@
     font-size: 13px;
     color: var(--muted);
   }
-  .nav-links a {
-    transition: color 0.15s;
-  }
+  .nav-links a { transition: color 0.15s; }
   .nav-links a:hover { color: var(--text); }
   .nav-cta {
     display: inline-flex;
@@ -129,7 +123,7 @@
   }
   .nav-cta svg { width: 14px; height: 14px; }
 
-  /* ── Hero ────────────────────────────────────────────────────────── */
+  /* Hero */
   .hero {
     padding: 88px 0 56px;
     text-align: left;
@@ -180,7 +174,7 @@
     margin: 0 0 40px;
   }
 
-  /* ── Download CTA ───────────────────────────────────────────────── */
+  /* CTA */
   .cta-row {
     display: flex;
     align-items: center;
@@ -216,6 +210,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
+    flex-wrap: wrap;
   }
   .other-downloads a {
     color: var(--text-2);
@@ -225,7 +220,7 @@
   }
   .other-downloads a:hover { color: var(--text); border-bottom-color: var(--text-2); }
 
-  /* ── Demo video frame ───────────────────────────────────────────── */
+  /* Demo video */
   .demo {
     margin-top: 72px;
     padding-bottom: 80px;
@@ -241,7 +236,6 @@
       0 30px 80px -30px rgba(0,0,0,0.8),
       0 12px 40px -12px rgba(0,0,0,0.6);
   }
-  /* Window chrome — references the look of the actual app window */
   .demo-chrome {
     height: 36px;
     background: var(--surface-2);
@@ -278,8 +272,6 @@
     object-fit: cover;
     display: block;
   }
-  /* Placeholder shown while no video is in place. Once you drop demo.mp4
-     into the folder, the <video> tag below will replace this automatically. */
   .demo-placeholder {
     text-align: center;
     color: var(--muted);
@@ -298,7 +290,7 @@
     color: var(--text-2);
   }
 
-  /* ── Features ───────────────────────────────────────────────────── */
+  /* Features */
   .features {
     border-top: 1px solid var(--border);
     padding: 80px 0;
@@ -350,7 +342,7 @@
     margin: 0;
   }
 
-  /* ── Install help ───────────────────────────────────────────────── */
+  /* Install walkthrough */
   .install {
     border-top: 1px solid var(--border);
     padding: 64px 0;
@@ -363,38 +355,98 @@
     color: var(--muted);
     margin: 0 0 28px;
   }
-  .install-grid {
+  .install-tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 32px;
+  }
+  .install-tab {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .install-tab:hover { color: var(--text-2); }
+  .install-tab.is-active {
+    background: var(--surface-2);
+    border-color: var(--border-2);
+    color: var(--text);
+  }
+  .install-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .install-steps.is-hidden { display: none; }
+  .install-steps li {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    grid-template-columns: 48px 1fr;
+    gap: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
   }
-  @media (max-width: 640px) {
-    .install-grid { grid-template-columns: 1fr; gap: 24px; }
+  .install-steps li:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
-  .install-block h4 {
+  .step-num {
     font-family: var(--mono);
     font-size: 13px;
     font-weight: 500;
-    color: var(--text-2);
-    margin: 0 0 10px;
+    color: var(--muted);
+    padding-top: 2px;
   }
-  .install-block p {
+  .step-body h4 {
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--text);
+    letter-spacing: -0.005em;
+  }
+  .step-body p {
     font-size: 14px;
     line-height: 1.6;
-    color: var(--muted);
+    color: var(--text-2);
     margin: 0;
   }
-  .install-block code {
+  .step-body p + p { margin-top: 10px; }
+  .step-body .step-note {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .step-body code {
     font-family: var(--mono);
-    font-size: 0.92em;
+    font-size: 0.9em;
     background: var(--surface);
     border: 1px solid var(--border);
     padding: 1px 6px;
     border-radius: 4px;
     color: var(--text-2);
   }
+  .step-body strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+  @media (max-width: 520px) {
+    .install-steps li {
+      grid-template-columns: 32px 1fr;
+      gap: 14px;
+    }
+  }
 
-  /* ── Footer ─────────────────────────────────────────────────────── */
+  /* Footer */
   footer {
     border-top: 1px solid var(--border);
     padding: 36px 0 48px;
@@ -414,7 +466,7 @@
   footer a:hover { color: var(--text); }
   footer .footer-right { display: flex; gap: 20px; }
 
-  /* ── Page-load animation: a deliberate, single staggered reveal ── */
+  /* Reveal animation */
   @keyframes rise {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -435,11 +487,9 @@
 
 <div class="container">
 
-  <!-- ── Nav ─────────────────────────────────────────────────── -->
   <nav class="nav reveal r1">
     <a href="/" class="brand">
       <span class="brand-mark" aria-hidden="true">
-        <!-- Inline icon: matches the app icon at small size -->
         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
           <g fill="#F8F4EC">
             <rect x="56" y="50" width="88" height="20"/>
@@ -463,9 +513,8 @@
     </div>
   </nav>
 
-  <!-- ── Hero ─────────────────────────────────────────────────── -->
   <section class="hero">
-    <p class="eyebrow reveal r2">v0.1.10 · macOS & Windows</p>
+    <p class="eyebrow reveal r2">v0.1.10 · macOS &amp; Windows</p>
 
     <h1 class="reveal r2">
       Stop bouncing between apps<br/>
@@ -495,7 +544,6 @@
     </div>
   </section>
 
-  <!-- ── Demo ─────────────────────────────────────────────────── -->
   <section class="demo reveal r5">
     <div class="demo-frame">
       <div class="demo-chrome" aria-hidden="true">
@@ -505,23 +553,13 @@
         <span class="label">stash · clipboard history</span>
       </div>
       <div class="demo-content">
-        <!--
-          REPLACE THIS BLOCK WITH YOUR VIDEO:
-
-          <video autoplay muted loop playsinline poster="demo-poster.png">
-            <source src="demo.mp4" type="video/mp4">
-          </video>
-
-          For now, a styled placeholder is shown.
-        -->
         <video autoplay muted loop playsinline>
-  <source src="demo.mp4" type="video/mp4">
-</video>
+          <source src="demo.mp4" type="video/mp4">
+        </video>
       </div>
     </div>
   </section>
 
-  <!-- ── Features ─────────────────────────────────────────────── -->
   <section class="features" id="features">
     <div class="features-grid">
       <div class="feature" data-tint="url">
@@ -542,26 +580,65 @@
     </div>
   </section>
 
-  <!-- ── Install help ─────────────────────────────────────────── -->
   <section class="install">
-    <p class="install-title">First-run notes</p>
-    <div class="install-grid">
-      <div class="install-block">
-        <h4>macOS</h4>
-        <p>
-          Stash isn't notarized yet, so on first launch macOS will say "Apple cannot check it for malicious software." Right-click the app in Applications → <code>Open</code> → <code>Open</code>. You only need to do this once.
-        </p>
-      </div>
-      <div class="install-block">
-        <h4>Windows</h4>
-        <p>
-          SmartScreen may show a "Windows protected your PC" prompt. Click <code>More info</code> → <code>Run anyway</code>. The installer isn't code-signed yet — open source code is on GitHub if you want to inspect or build it yourself.
-        </p>
-      </div>
+    <p class="install-title">First-run walkthrough</p>
+
+    <div class="install-tabs" role="tablist">
+      <button class="install-tab is-active" role="tab" data-os="mac" aria-selected="true">macOS</button>
+      <button class="install-tab" role="tab" data-os="win" aria-selected="false">Windows</button>
     </div>
+
+    <ol class="install-steps" data-os="mac">
+      <li>
+        <span class="step-num">01</span>
+        <div class="step-body">
+          <h4>Open the downloaded <code>.dmg</code></h4>
+          <p>Double-click the file in your Downloads folder. When the window opens, drag the Stash icon into the Applications folder.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-num">02</span>
+        <div class="step-body">
+          <h4>Right-click Stash, then choose Open</h4>
+          <p>In Applications, right-click (or two-finger click) <strong>Stash</strong> → <code>Open</code>. macOS will warn that Apple can't verify the developer — click <code>Open</code> in the dialog to confirm.</p>
+          <p class="step-note">You only need to do this on first launch. After that, Stash opens normally.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-num">03</span>
+        <div class="step-body">
+          <h4>Press <code>⌘ + Shift + V</code> to open Stash</h4>
+          <p>Stash lives in your menu bar. Use the shortcut from anywhere to slide the drawer in, then drag clips into your apps.</p>
+        </div>
+      </li>
+    </ol>
+
+    <ol class="install-steps is-hidden" data-os="win">
+      <li>
+        <span class="step-num">01</span>
+        <div class="step-body">
+          <h4>Run <code>Stash-win-x64.exe</code></h4>
+          <p>Double-click the installer in your Downloads folder. Windows will install Stash and add it to your Start menu.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-num">02</span>
+        <div class="step-body">
+          <h4>Bypass the SmartScreen warning</h4>
+          <p>Windows may show a blue <strong>"Windows protected your PC"</strong> prompt. Click <code>More info</code>, then <code>Run anyway</code> to continue.</p>
+          <p class="step-note">This happens because Stash isn't code-signed yet. The source is on GitHub if you want to inspect or build it yourself.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-num">03</span>
+        <div class="step-body">
+          <h4>Press <code>Ctrl + Shift + V</code> to open Stash</h4>
+          <p>Stash lives in your system tray. Use the shortcut from anywhere to slide the drawer in, then drag clips into your apps.</p>
+        </div>
+      </li>
+    </ol>
   </section>
 
-  <!-- ── Footer ───────────────────────────────────────────────── -->
   <footer>
     <div>Stash · MIT license · built by <a href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></div>
     <div class="footer-right">
@@ -574,21 +651,16 @@
 </div>
 
 <script>
-  // OS detection — sets the primary download to the right binary.
-  // Falls back gracefully to the latest-release page if detection fails.
+  // OS detection — picks the right primary download
   (function() {
     var ua = navigator.userAgent || '';
     var platform = navigator.platform || '';
     var isMac = /Mac/i.test(platform) || /Mac OS/i.test(ua);
     var isWindows = /Win/i.test(platform);
-    // Apple Silicon detection is imperfect from the browser. Safari 16.4+ on
-    // ARM Macs reports "arm" in some signals; we use a best-effort check and
-    // default Intel-leaning, but always surface both Mac options below.
     var likelyArm = false;
     try {
       likelyArm = isMac && (
         /arm|aarch/i.test(navigator.userAgentData && navigator.userAgentData.platform || '') ||
-        // Heuristic: most Macs running modern Safari and not reporting Intel are arm64
         (window.matchMedia('(min-resolution: 2dppx)').matches && !/Intel/i.test(ua) && !/x86/i.test(ua))
       );
     } catch (e) {}
@@ -607,7 +679,32 @@
       primary.href = BASE + 'Stash-win-x64.exe';
       label.textContent = 'Download for Windows';
     }
-    // else: leave the default href pointing at the releases page
+  })();
+
+  // Install walkthrough tabs — default to user's OS, allow manual switch
+  (function() {
+    var tabs = document.querySelectorAll('.install-tab');
+    var panels = document.querySelectorAll('.install-steps');
+    if (!tabs.length || !panels.length) return;
+
+    function activate(os) {
+      tabs.forEach(function(t) {
+        var on = t.dataset.os === os;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function(p) {
+        p.classList.toggle('is-hidden', p.dataset.os !== os);
+      });
+    }
+
+    var platform = navigator.platform || '';
+    var defaultOs = /Mac/i.test(platform) ? 'mac' : (/Win/i.test(platform) ? 'win' : 'mac');
+    activate(defaultOs);
+
+    tabs.forEach(function(t) {
+      t.addEventListener('click', function() { activate(t.dataset.os); });
+    });
   })();
 </script>
 
