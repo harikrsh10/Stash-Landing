@@ -1,6 +1,6 @@
 ﻿# Stash — Landing Page
 
-Source for the Stash landing page, served at [stash.vercel.app](https://stash.vercel.app).
+Source for the Stash landing page, served at (https://stash-site.vercel.app/).
 
 The actual Stash app lives at [github.com/harikrsh10/Stash](https://github.com/harikrsh10/Stash).
 
