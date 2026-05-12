@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Stash — Stop bouncing between apps to paste</title>
+<meta name="description" content="A clipboard manager that lives in one shortcut and drags into any app. The last ten things you copied, always one keystroke away." />
+<meta property="og:title" content="Stash — Stop bouncing between apps to paste" />
+<meta property="og:description" content="A clipboard manager that lives in one shortcut and drags into any app." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#0a0a0a" />
+<link rel="icon" type="image/png" href="icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    /* Pulled directly from the Stash app for visual continuity */
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-2: #1a1a1a;
+    --border: #222;
+    --border-2: #2f2f2f;
+    --text: #e8e8e8;
+    --text-2: #b8b8b8;
+    --muted: #666;
+    --muted-2: #444;
+    --accent: #f8f4ec;        /* Warm off-white from the icon */
+    --accent-dim: rgba(248, 244, 236, 0.06);
+
+    /* Type-badge tints, lifted from the app — used sparingly as accent color */
+    --tint-code: #a0a0ff;
+    --tint-url: #6dbf8c;
+    --tint-img: #d4a06a;
+
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Subtle grain — adds depth without decoration */
+    background-image:
+      radial-gradient(ellipse at top, rgba(255,255,255,0.015) 0%, transparent 60%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.018 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  }
+
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  /* ── Layout ─────────────────────────────────────────────────────── */
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  @media (max-width: 640px) {
+    .container { padding: 0 20px; }
+  }
+
+  /* ── Nav ─────────────────────────────────────────────────────────── */
+  .nav {
+    padding: 28px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: linear-gradient(180deg, #2a2a2a, #0a0a0a);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .brand-mark svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .nav-links a {
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--border-2);
+    border-radius: 6px;
+    color: var(--text-2) !important;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .nav-cta:hover {
+    border-color: var(--text-2);
+    color: var(--text) !important;
+    background: var(--surface);
+  }
+  .nav-cta svg { width: 14px; height: 14px; }
+
+  /* ── Hero ────────────────────────────────────────────────────────── */
+  .hero {
+    padding: 88px 0 56px;
+    text-align: left;
+  }
+  @media (max-width: 640px) { .hero { padding: 56px 0 40px; } }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--tint-url);
+    box-shadow: 0 0 8px rgba(109, 191, 140, 0.4);
+  }
+
+  h1 {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+    max-width: 18ch;
+  }
+  h1 .accent {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-style: normal;
+    color: var(--text-2);
+    font-size: 0.88em;
+  }
+
+  .subhead {
+    font-size: clamp(17px, 2vw, 19px);
+    line-height: 1.5;
+    color: var(--text-2);
+    max-width: 56ch;
+    margin: 0 0 40px;
+  }
+
+  /* ── Download CTA ───────────────────────────────────────────────── */
+  .cta-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.15s, border-color 0.15s;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: #fff; }
+  .btn-primary svg { width: 16px; height: 16px; }
+
+  .other-downloads {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .other-downloads a {
+    color: var(--text-2);
+    border-bottom: 1px dotted var(--border-2);
+    padding-bottom: 1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .other-downloads a:hover { color: var(--text); border-bottom-color: var(--text-2); }
+
+  /* ── Demo video frame ───────────────────────────────────────────── */
+  .demo {
+    margin-top: 72px;
+    padding-bottom: 80px;
+  }
+  .demo-frame {
+    position: relative;
+    border: 1px solid var(--border-2);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.04) inset,
+      0 30px 80px -30px rgba(0,0,0,0.8),
+      0 12px 40px -12px rgba(0,0,0,0.6);
+  }
+  /* Window chrome — references the look of the actual app window */
+  .demo-chrome {
+    height: 36px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 8px;
+  }
+  .demo-chrome .dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--border-2);
+  }
+  .demo-chrome .label {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .demo-content {
+    aspect-ratio: 16 / 10;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-content video,
+  .demo-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* Placeholder shown while no video is in place. Once you drop demo.mp4
+     into the folder, the <video> tag below will replace this automatically. */
+  .demo-placeholder {
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 40px;
+  }
+  .demo-placeholder .play {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid var(--border-2);
+    margin: 0 auto 16px;
+    display: grid;
+    place-items: center;
+    color: var(--text-2);
+  }
+
+  /* ── Features ───────────────────────────────────────────────────── */
+  .features {
+    border-top: 1px solid var(--border);
+    padding: 80px 0;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  @media (max-width: 720px) {
+    .features-grid { grid-template-columns: 1fr; }
+  }
+  .feature {
+    background: var(--bg);
+    padding: 36px 32px;
+  }
+  .feature-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-2);
+    color: var(--muted);
+  }
+  .feature[data-tint="code"] .feature-tag { color: var(--tint-code); border-color: rgba(160,160,255,0.25); }
+  .feature[data-tint="url"]  .feature-tag { color: var(--tint-url);  border-color: rgba(109,191,140,0.25); }
+  .feature[data-tint="img"]  .feature-tag { color: var(--tint-img);  border-color: rgba(212,160,106,0.25); }
+
+  .feature h3 {
+    font-family: var(--sans);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+    color: var(--text);
+  }
+  .feature p {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--text-2);
+    margin: 0;
+  }
+
+  /* ── Install help ───────────────────────────────────────────────── */
+  .install {
+    border-top: 1px solid var(--border);
+    padding: 64px 0;
+  }
+  .install-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 28px;
+  }
+  .install-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 640px) {
+    .install-grid { grid-template-columns: 1fr; gap: 24px; }
+  }
+  .install-block h4 {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    margin: 0 0 10px;
+  }
+  .install-block p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0;
+  }
+  .install-block code {
+    font-family: var(--mono);
+    font-size: 0.92em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--text-2);
+  }
+
+  /* ── Footer ─────────────────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 0 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  footer a {
+    color: var(--text-2);
+    transition: color 0.15s;
+  }
+  footer a:hover { color: var(--text); }
+  footer .footer-right { display: flex; gap: 20px; }
+
+  /* ── Page-load animation: a deliberate, single staggered reveal ── */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { animation: rise 0.7s ease-out backwards; }
+  .r1 { animation-delay: 0.05s; }
+  .r2 { animation-delay: 0.15s; }
+  .r3 { animation-delay: 0.25s; }
+  .r4 { animation-delay: 0.35s; }
+  .r5 { animation-delay: 0.55s; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { animation: none; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- ── Nav ─────────────────────────────────────────────────── -->
+  <nav class="nav reveal r1">
+    <a href="/" class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <!-- Inline icon: matches the app icon at small size -->
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#F8F4EC">
+            <rect x="56" y="50" width="88" height="20"/>
+            <rect x="56" y="50" width="20" height="40"/>
+            <rect x="56" y="90" width="88" height="20"/>
+            <rect x="124" y="110" width="20" height="40"/>
+            <rect x="56" y="130" width="88" height="20"/>
+          </g>
+        </svg>
+      </span>
+      Stash
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="https://github.com/harikrsh10/Stash" class="nav-cta" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ─────────────────────────────────────────────────── -->
+  <section class="hero">
+    <p class="eyebrow reveal r2">v0.1.10 · macOS & Windows</p>
+
+    <h1 class="reveal r2">
+      Stop bouncing between apps<br/>
+      <span class="accent">just to paste what you copied.</span>
+    </h1>
+
+    <p class="subhead reveal r3">
+      Stash keeps your last copies one keystroke away
+      and lets you drag them straight into any app — no
+      switching, no hunting, no losing the thing you copied
+      two minutes ago.
+    </p>
+
+    <div class="cta-row reveal r4">
+      <a id="download-primary" class="btn btn-primary" href="https://github.com/harikrsh10/Stash/releases/latest">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
+        </svg>
+        <span id="download-label">Download for your OS</span>
+      </a>
+      <div class="other-downloads" id="other-downloads">
+        <span>also available for</span>
+        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg" data-os="mac-arm">Mac (Apple Silicon)</a>
+        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg" data-os="mac-intel">Mac (Intel)</a>
+        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe" data-os="win">Windows</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Demo ─────────────────────────────────────────────────── -->
+  <section class="demo reveal r5">
+    <div class="demo-frame">
+      <div class="demo-chrome" aria-hidden="true">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="label">stash · clipboard history</span>
+      </div>
+      <div class="demo-content">
+        <!--
+          REPLACE THIS BLOCK WITH YOUR VIDEO:
+
+          <video autoplay muted loop playsinline poster="demo-poster.png">
+            <source src="demo.mp4" type="video/mp4">
+          </video>
+
+          For now, a styled placeholder is shown.
+        -->
+        <video autoplay muted loop playsinline>
+  <source src="demo.mp4" type="video/mp4">
+</video>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ─────────────────────────────────────────────── -->
+  <section class="features" id="features">
+    <div class="features-grid">
+      <div class="feature" data-tint="url">
+        <span class="feature-tag">drag</span>
+        <h3>Drag straight into any app</h3>
+        <p>Pull a clip out of Stash and drop it directly into VS Code, Figma, Notion — anywhere that accepts text or images. No copy-paste round-trip.</p>
+      </div>
+      <div class="feature" data-tint="code">
+        <span class="feature-tag">secure</span>
+        <h3>Skips secrets automatically</h3>
+        <p>API keys, JWTs, and credit card numbers are detected and excluded from history before they're ever stored. Stops accidental leaks during screen-shares.</p>
+      </div>
+      <div class="feature" data-tint="img">
+        <span class="feature-tag">fast</span>
+        <h3>One shortcut, gone in a flash</h3>
+        <p>Cmd+Shift+V opens the drawer, picks the clip, closes itself. No window to manage, no app to alt-tab to, no flow broken.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Install help ─────────────────────────────────────────── -->
+  <section class="install">
+    <p class="install-title">First-run notes</p>
+    <div class="install-grid">
+      <div class="install-block">
+        <h4>macOS</h4>
+        <p>
+          Stash isn't notarized yet, so on first launch macOS will say "Apple cannot check it for malicious software." Right-click the app in Applications → <code>Open</code> → <code>Open</code>. You only need to do this once.
+        </p>
+      </div>
+      <div class="install-block">
+        <h4>Windows</h4>
+        <p>
+          SmartScreen may show a "Windows protected your PC" prompt. Click <code>More info</code> → <code>Run anyway</code>. The installer isn't code-signed yet — open source code is on GitHub if you want to inspect or build it yourself.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ───────────────────────────────────────────────── -->
+  <footer>
+    <div>Stash · MIT license · built by <a href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></div>
+    <div class="footer-right">
+      <a href="https://github.com/harikrsh10/Stash" target="_blank" rel="noopener">Source</a>
+      <a href="https://github.com/harikrsh10/Stash/releases" target="_blank" rel="noopener">Releases</a>
+      <a href="https://github.com/harikrsh10/Stash/issues" target="_blank" rel="noopener">Issues</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // OS detection — sets the primary download to the right binary.
+  // Falls back gracefully to the latest-release page if detection fails.
+  (function() {
+    var ua = navigator.userAgent || '';
+    var platform = navigator.platform || '';
+    var isMac = /Mac/i.test(platform) || /Mac OS/i.test(ua);
+    var isWindows = /Win/i.test(platform);
+    // Apple Silicon detection is imperfect from the browser. Safari 16.4+ on
+    // ARM Macs reports "arm" in some signals; we use a best-effort check and
+    // default Intel-leaning, but always surface both Mac options below.
+    var likelyArm = false;
+    try {
+      likelyArm = isMac && (
+        /arm|aarch/i.test(navigator.userAgentData && navigator.userAgentData.platform || '') ||
+        // Heuristic: most Macs running modern Safari and not reporting Intel are arm64
+        (window.matchMedia('(min-resolution: 2dppx)').matches && !/Intel/i.test(ua) && !/x86/i.test(ua))
+      );
+    } catch (e) {}
+
+    var primary = document.getElementById('download-primary');
+    var label = document.getElementById('download-label');
+    var BASE = 'https://github.com/harikrsh10/Stash/releases/latest/download/';
+
+    if (isMac && likelyArm) {
+      primary.href = BASE + 'Stash-mac-arm64.dmg';
+      label.textContent = 'Download for Mac (Apple Silicon)';
+    } else if (isMac) {
+      primary.href = BASE + 'Stash-mac-x64.dmg';
+      label.textContent = 'Download for Mac';
+    } else if (isWindows) {
+      primary.href = BASE + 'Stash-win-x64.exe';
+      label.textContent = 'Download for Windows';
+    }
+    // else: leave the default href pointing at the releases page
+  })();
+</script>
+
+</body>
+</html>
