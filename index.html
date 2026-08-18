@@ -4,9 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Stash — Stop bouncing between apps to paste</title>
-<meta name="description" content="A clipboard manager that lives in one shortcut and drags into any app. The last ten things you copied, always one keystroke away." />
+<meta name="description" content="A clipboard manager that keeps your last 100 copies, holds a permanent library of prompts, and pulls text out of screenshots — signed and notarized for macOS." />
 <meta property="og:title" content="Stash — Stop bouncing between apps to paste" />
-<meta property="og:description" content="A clipboard manager that lives in one shortcut and drags into any app." />
+<meta property="og:description" content="Everything you copy, quietly kept. Drag it into any app, build a prompt library that never ages out, pull text out of screenshots." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="https://stash-site.vercel.app/og-image.png" />
    <meta property="og:image:width" content="1200" />
@@ -36,6 +36,9 @@
     --tint-code: #a0a0ff;
     --tint-url: #6dbf8c;
     --tint-img: #d4a06a;
+    --tint-stack: #d4b56a;
+    --tint-prompt: #b09aeb;
+    --tint-speed: #e08a7a;
 
     --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -115,17 +118,16 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 14px;
-    border: 1px solid var(--border-2);
+    padding: 8px 16px;
+    border: 1px solid transparent;
     border-radius: 6px;
-    color: var(--text-2) !important;
-    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    background: var(--accent);
+    color: var(--bg) !important;
+    font-weight: 500;
+    transition: background 0.15s, transform 0.12s ease;
   }
-  .nav-cta:hover {
-    border-color: var(--text-2);
-    color: var(--text) !important;
-    background: var(--surface);
-  }
+  .nav-cta:hover { background: #fff; }
+  .nav-cta:active { transform: translateY(1px); }
   .nav-cta svg { width: 14px; height: 14px; }
 
   /* Hero */
@@ -328,9 +330,12 @@
     border: 1px solid var(--border-2);
     color: var(--muted);
   }
-  .feature[data-tint="code"] .feature-tag { color: var(--tint-code); border-color: rgba(160,160,255,0.25); }
-  .feature[data-tint="url"]  .feature-tag { color: var(--tint-url);  border-color: rgba(109,191,140,0.25); }
-  .feature[data-tint="img"]  .feature-tag { color: var(--tint-img);  border-color: rgba(212,160,106,0.25); }
+  .feature[data-tint="code"]   .feature-tag { color: var(--tint-code);   border-color: rgba(160,160,255,0.25); }
+  .feature[data-tint="url"]    .feature-tag { color: var(--tint-url);    border-color: rgba(109,191,140,0.25); }
+  .feature[data-tint="img"]    .feature-tag { color: var(--tint-img);    border-color: rgba(212,160,106,0.25); }
+  .feature[data-tint="stack"]  .feature-tag { color: var(--tint-stack);  border-color: rgba(212,181,106,0.25); }
+  .feature[data-tint="prompt"] .feature-tag { color: var(--tint-prompt); border-color: rgba(176,154,235,0.25); }
+  .feature[data-tint="speed"]  .feature-tag { color: var(--tint-speed);  border-color: rgba(224,138,122,0.25); }
 
   .feature h3 {
     font-family: var(--sans);
@@ -471,6 +476,92 @@
   footer a:hover { color: var(--text); }
   footer .footer-right { display: flex; gap: 20px; }
 
+  /* Hero trust line — sits under the CTA row, answers "is this safe?" immediately */
+  .hero-trust {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: 20px 0 0;
+    letter-spacing: 0.01em;
+  }
+  .hero-trust b { color: var(--text-2); font-weight: 500; }
+
+  /* Section intros — used above the features, trust and download grids */
+  .section-head { max-width: 56ch; margin: 0 0 40px; }
+  .section-head .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+  .section-head h2 {
+    font-family: var(--sans);
+    font-size: clamp(24px, 3.2vw, 32px);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    color: var(--text);
+  }
+  .section-head p {
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+    margin: 0;
+  }
+  .download .section-head,
+  .trust .section-head { margin-left: auto; margin-right: auto; text-align: center; }
+
+  /* Trust — reuses the .feature card, one consistent color instead of the
+     features grid's variety, so this section reads as a single unified claim */
+  .trust { border-top: 1px solid var(--border); padding: 80px 0; }
+
+  /* Download — the page's actual conversion point, reached directly from the nav */
+  .download { border-top: 1px solid var(--border); padding: 80px 0; text-align: center; }
+  .download-grid {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .btn-secondary {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 16px 22px;
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    min-width: 190px;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s, transform 0.12s ease;
+  }
+  .btn-secondary:hover { border-color: var(--text-2); background: var(--surface); }
+  .btn-secondary:active { transform: translateY(1px); }
+  .btn-secondary .platform {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .btn-secondary .filetype {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .download-note {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .download-note b { color: var(--text-2); font-weight: 500; }
+
   /* Reveal animation */
   @keyframes rise {
     from { opacity: 0; transform: translateY(12px); }
@@ -512,17 +603,18 @@
     </a>
     <div class="nav-links">
       <a href="#features">Features</a>
-      <a href="https://github.com/harikrsh10/Stash" class="nav-cta" target="_blank" rel="noopener">
-        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+      <a href="#security">Security</a>
+      <a href="#download" class="nav-cta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
         </svg>
-        GitHub
+        Download
       </a>
     </div>
   </nav>
 
   <section class="hero">
-    <p class="eyebrow reveal r2">v0.1.10 · macOS &amp; Windows</p>
+    <p class="eyebrow reveal r2">macOS &amp; Windows</p>
 
     <h1 class="reveal r2">
       Stop bouncing between apps<br/>
@@ -530,10 +622,9 @@
     </h1>
 
     <p class="subhead reveal r3">
-      Stash keeps your last copies one keystroke away
-      and lets you drag them straight into any app — no
-      switching, no hunting, no losing the thing you copied
-      two minutes ago.
+      Stash keeps your last 100 copies one keystroke away, holds onto the
+      prompts you reuse, and pulls text straight out of screenshots — no
+      switching, no retyping, no losing the thing you copied two minutes ago.
     </p>
 
     <div class="cta-row reveal r4">
@@ -550,6 +641,11 @@
         <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe" data-os="win">Windows</a>
       </div>
     </div>
+
+    <p class="hero-trust reveal r5">
+      Free · <b>Signed &amp; notarized for macOS</b> — no security warning to
+      click through · Nothing you copy ever leaves your device
+    </p>
   </section>
 
   <section class="demo reveal r5">
@@ -569,23 +665,95 @@
   </section>
 
   <section class="features" id="features">
+    <div class="section-head">
+      <p class="kicker">What Stash does</p>
+      <h2>More than a clipboard — a place things you copy actually stay useful</h2>
+      <p>Six ways Stash earns the shortcut you'll use fifty times a day.</p>
+    </div>
     <div class="features-grid">
       <div class="feature" data-tint="url">
         <span class="feature-tag">drag</span>
         <h3>Drag straight into any app</h3>
         <p>Pull a clip out of Stash and drop it directly into VS Code, Figma, Notion — anywhere that accepts text or images. No copy-paste round-trip.</p>
       </div>
+      <div class="feature" data-tint="stack">
+        <span class="feature-tag">stack</span>
+        <h3>Gather a stack, drop it in one go</h3>
+        <p>⌘-click a handful of clips — screenshots, snippets, whatever — and drag the whole stack into Figma, an AI chat, or a folder. Everything lands at once.</p>
+      </div>
+      <div class="feature" data-tint="prompt">
+        <span class="feature-tag">prompts</span>
+        <h3>Build a prompt library that doesn't age out</h3>
+        <p>Mark a clip once and it's permanent — tagged, searchable, and never pushed out by the next hundred things you copy.</p>
+      </div>
+      <div class="feature" data-tint="img">
+        <span class="feature-tag">extract</span>
+        <h3>Pull text out of any screenshot</h3>
+        <p>Copy an image, hit extract, and pick out just the text you need — read by the same engine as macOS and Windows themselves, not a bundled guess.</p>
+      </div>
       <div class="feature" data-tint="code">
         <span class="feature-tag">secure</span>
         <h3>Skips secrets automatically</h3>
         <p>API keys, JWTs, and credit card numbers are detected and excluded from history before they're ever stored. Stops accidental leaks during screen-shares.</p>
       </div>
-      <div class="feature" data-tint="img">
+      <div class="feature" data-tint="speed">
         <span class="feature-tag">fast</span>
         <h3>One shortcut, gone in a flash</h3>
         <p>Cmd+Shift+V opens the drawer, picks the clip, closes itself. No window to manage, no app to alt-tab to, no flow broken.</p>
       </div>
     </div>
+  </section>
+
+  <section class="trust" id="security">
+    <div class="section-head">
+      <p class="kicker">Security &amp; privacy</p>
+      <h2>Built to be trusted with what you copy</h2>
+      <p>Stash runs entirely on your machine. Here's exactly what that means.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature" data-tint="url">
+        <span class="feature-tag">signed</span>
+        <h3>Signed &amp; notarized for macOS</h3>
+        <p>Every Mac release carries a Developer ID signature and is notarized by Apple before it ships. Gatekeeper approves it on the first launch — no bypass, no warning dialog to click through.</p>
+      </div>
+      <div class="feature" data-tint="url">
+        <span class="feature-tag">local</span>
+        <h3>Nothing you copy ever leaves your device</h3>
+        <p>Regular history lives in memory only and clears the moment you quit. Pinned clips and prompts are saved to one file on your own machine — never uploaded, never synced to a server.</p>
+      </div>
+      <div class="feature" data-tint="url">
+        <span class="feature-tag">filtered</span>
+        <h3>Secrets never make it into history</h3>
+        <p>API keys, JWTs, AWS credentials, 2FA codes and credit card numbers are detected and silently skipped before they're ever stored — so a screen-share can't leak what you just copied.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="download" id="download">
+    <div class="section-head">
+      <p class="kicker">Get Stash</p>
+      <h2>Download for your platform</h2>
+      <p>Free to use. Pick the build that matches your machine.</p>
+    </div>
+    <div class="download-grid">
+      <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
+        <span class="platform">Mac (Apple Silicon)</span>
+        <span class="filetype">.dmg · signed &amp; notarized</span>
+      </a>
+      <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">
+        <span class="platform">Mac (Intel)</span>
+        <span class="filetype">.dmg · signed &amp; notarized</span>
+      </a>
+      <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">
+        <span class="platform">Windows</span>
+        <span class="filetype">.exe</span>
+      </a>
+    </div>
+    <p class="download-note">
+      macOS builds are <b>signed and notarized</b> — no security prompt to click through.
+      The Windows build isn't signed yet, so SmartScreen will warn on first run;
+      click <b>More info</b> → <b>Run anyway</b> to continue.
+    </p>
   </section>
 
   <section class="install">
@@ -607,9 +775,9 @@
       <li>
         <span class="step-num">02</span>
         <div class="step-body">
-          <h4>Right-click Stash, then choose Open</h4>
-          <p>In Applications, right-click (or two-finger click) <strong>Stash</strong> → <code>Open</code>. macOS will warn that Apple can't verify the developer — click <code>Open</code> in the dialog to confirm.</p>
-          <p class="step-note">You only need to do this on first launch. After that, Stash opens normally.</p>
+          <h4>Open Stash from Applications</h4>
+          <p>Double-click <strong>Stash</strong> to launch it. It's signed and notarized by Apple, so there's no security warning to click through.</p>
+          <p class="step-note">Already had an earlier build installed? Remove Stash under System Settings → Privacy &amp; Security → Accessibility and add it back, or auto-paste will fail silently — macOS ties that permission to the app's signature.</p>
         </div>
       </li>
       <li>
@@ -648,11 +816,10 @@
   </section>
 
   <footer>
-    <div>Stash · MIT license · built by <a href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></div>
+    <div>Stash · built by <a href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></div>
     <div class="footer-right">
       <a href="https://github.com/harikrsh10/Stash" target="_blank" rel="noopener">Source</a>
-      <a href="https://github.com/harikrsh10/Stash/releases" target="_blank" rel="noopener">Releases</a>
-      <a href="https://github.com/harikrsh10/Stash/issues" target="_blank" rel="noopener">Issues</a>
+      <a href="https://github.com/harikrsh10/Stash/issues" target="_blank" rel="noopener">Report an issue</a>
     </div>
   </footer>
 
