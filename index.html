@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Stash — Stop bouncing between apps to paste</title>
-<meta name="description" content="A clipboard manager that keeps your last 100 copies, holds a permanent library of prompts, and pulls text out of screenshots — signed and notarized for macOS." />
+<meta name="description" content="A clipboard manager that keeps your last 100 copies, holds a permanent library of prompts, and pulls text out of screenshots. Free for macOS and Windows." />
 <meta property="og:title" content="Stash — Stop bouncing between apps to paste" />
 <meta property="og:description" content="Everything you copy, quietly kept. Drag it into any app, build a prompt library that never ages out, pull text out of screenshots." />
 <meta property="og:type" content="website" />
@@ -486,6 +486,26 @@
   }
   .hero-trust b { color: var(--text-2); font-weight: 500; }
 
+  /* Mid-page CTA — the download option shouldn't only exist at the two ends
+     of the page, so it recurs once the features have made their case. */
+  .inline-cta {
+    margin-top: 40px;
+    padding: 26px 30px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .inline-cta p {
+    margin: 0;
+    font-size: 15.5px;
+    color: var(--text-2);
+  }
+
   /* Section intros — used above the features, trust and download grids */
   .section-head { max-width: 56ch; margin: 0 0 40px; }
   .section-head .kicker {
@@ -628,23 +648,21 @@
     </p>
 
     <div class="cta-row reveal r4">
-      <a id="download-primary" class="btn btn-primary" href="https://github.com/harikrsh10/Stash/releases/latest">
+      <a id="download-primary" class="btn btn-primary"
+         href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
         </svg>
-        <span id="download-label">Download for your OS</span>
+        <span id="download-label">Download Stash</span>
       </a>
-      <div class="other-downloads" id="other-downloads">
-        <span>also available for</span>
-        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg" data-os="mac-arm">Mac (Apple Silicon)</a>
-        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg" data-os="mac-intel">Mac (Intel)</a>
-        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe" data-os="win">Windows</a>
+      <div class="other-downloads" id="download-alt">
+        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">Intel Mac</a>
+        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">Windows</a>
       </div>
     </div>
 
     <p class="hero-trust reveal r5">
-      Free · <b>Signed &amp; notarized for macOS</b> — no security warning to
-      click through · Nothing you copy ever leaves your device
+      Free · Works on macOS and Windows · Nothing you copy ever leaves your device
     </p>
   </section>
 
@@ -702,6 +720,17 @@
         <p>Cmd+Shift+V opens the drawer, picks the clip, closes itself. No window to manage, no app to alt-tab to, no flow broken.</p>
       </div>
     </div>
+
+    <div class="inline-cta">
+      <p>Free, and it takes about a minute to set up.</p>
+      <a id="download-mid" class="btn btn-primary"
+         href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
+        </svg>
+        <span id="download-mid-label">Download Stash</span>
+      </a>
+    </div>
   </section>
 
   <section class="trust" id="security">
@@ -712,9 +741,9 @@
     </div>
     <div class="features-grid">
       <div class="feature" data-tint="url">
-        <span class="feature-tag">signed</span>
-        <h3>Signed &amp; notarized for macOS</h3>
-        <p>Every Mac release carries a Developer ID signature and is notarized by Apple before it ships. Gatekeeper approves it on the first launch — no bypass, no warning dialog to click through.</p>
+        <span class="feature-tag">memory</span>
+        <h3>Ordinary history never touches disk</h3>
+        <p>What you copy lives in memory and clears the moment you quit. Only the clips you deliberately pin, and the prompts you save, are ever written down.</p>
       </div>
       <div class="feature" data-tint="url">
         <span class="feature-tag">local</span>
@@ -737,21 +766,20 @@
     </div>
     <div class="download-grid">
       <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
-        <span class="platform">Mac (Apple Silicon)</span>
-        <span class="filetype">.dmg · signed &amp; notarized</span>
+        <span class="platform">Mac · Apple Silicon</span>
+        <span class="filetype">.dmg · M1 and later</span>
       </a>
       <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">
-        <span class="platform">Mac (Intel)</span>
-        <span class="filetype">.dmg · signed &amp; notarized</span>
+        <span class="platform">Mac · Intel</span>
+        <span class="filetype">.dmg</span>
       </a>
       <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">
         <span class="platform">Windows</span>
-        <span class="filetype">.exe</span>
+        <span class="filetype">.exe · 10 and 11</span>
       </a>
     </div>
     <p class="download-note">
-      macOS builds are <b>signed and notarized</b> — no security prompt to click through.
-      The Windows build isn't signed yet, so SmartScreen will warn on first run;
+      On Windows, SmartScreen will interrupt the first run —
       click <b>More info</b> → <b>Run anyway</b> to continue.
     </p>
   </section>
@@ -776,8 +804,8 @@
         <span class="step-num">02</span>
         <div class="step-body">
           <h4>Open Stash from Applications</h4>
-          <p>Double-click <strong>Stash</strong> to launch it. It's signed and notarized by Apple, so there's no security warning to click through.</p>
-          <p class="step-note">Already had an earlier build installed? Remove Stash under System Settings → Privacy &amp; Security → Accessibility and add it back, or auto-paste will fail silently — macOS ties that permission to the app's signature.</p>
+          <p>Double-click <strong>Stash</strong> to launch it. It appears in your menu bar and starts keeping your clipboard right away.</p>
+          <p class="step-note">Upgrading from an older build and using auto-paste? Remove Stash under System Settings → Privacy &amp; Security → Accessibility and add it back.</p>
         </div>
       </li>
       <li>
@@ -826,33 +854,77 @@
 </div>
 
 <script>
-  // OS detection — picks the right primary download
+  // OS detection — picks the right primary download.
+  //
+  // The button's href in the HTML is already a real installer, not the releases
+  // page: if this script never runs, or the visitor is on a platform we don't
+  // ship for, the click still downloads something rather than dumping them on
+  // GitHub to work it out themselves.
   (function() {
     var ua = navigator.userAgent || '';
     var platform = navigator.platform || '';
     var isMac = /Mac/i.test(platform) || /Mac OS/i.test(ua);
     var isWindows = /Win/i.test(platform);
-    var likelyArm = false;
-    try {
-      likelyArm = isMac && (
-        /arm|aarch/i.test(navigator.userAgentData && navigator.userAgentData.platform || '') ||
-        (window.matchMedia('(min-resolution: 2dppx)').matches && !/Intel/i.test(ua) && !/x86/i.test(ua))
-      );
-    } catch (e) {}
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+
+    // Apple Silicon can't be read from the user agent: Safari and Chrome both
+    // still report "Intel Mac OS X" on M-series machines, so the obvious UA
+    // check silently sends every Mac the Intel build. The GPU string is the
+    // one thing that actually differs — Apple Silicon renders as "Apple M…".
+    function isAppleSilicon() {
+      try {
+        var c = document.createElement('canvas');
+        var gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (!gl) return false;
+        var dbg = gl.getExtension('WEBGL_debug_renderer_info');
+        if (!dbg) return false;
+        var r = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || '';
+        return /apple\s*(m\d|gpu|silicon)/i.test(r);
+      } catch (e) { return false; }
+    }
 
     var primary = document.getElementById('download-primary');
     var label = document.getElementById('download-label');
+    var alt = document.getElementById('download-alt');
+    var mid = document.getElementById('download-mid');
+    var midLabel = document.getElementById('download-mid-label');
     var BASE = 'https://github.com/harikrsh10/Stash/releases/latest/download/';
 
-    if (isMac && likelyArm) {
-      primary.href = BASE + 'Stash-mac-arm64.dmg';
-      label.textContent = 'Download for Mac (Apple Silicon)';
-    } else if (isMac) {
-      primary.href = BASE + 'Stash-mac-x64.dmg';
-      label.textContent = 'Download for Mac';
-    } else if (isWindows) {
-      primary.href = BASE + 'Stash-win-x64.exe';
-      label.textContent = 'Download for Windows';
+    var MAC_ARM = BASE + 'Stash-mac-arm64.dmg';
+    var MAC_X64 = BASE + 'Stash-mac-x64.dmg';
+    var WIN     = BASE + 'Stash-win-x64.exe';
+
+    if (!primary) return;
+
+    if (isMac && !isMobile) {
+      var arm = isAppleSilicon();
+      primary.href = arm ? MAC_ARM : MAC_X64;
+      if (label) label.textContent = 'Download for Mac';
+      // Chip detection is a best guess, so the other Mac build stays one click
+      // away instead of being hidden behind a wrong assumption.
+      if (alt) {
+        alt.innerHTML = arm
+          ? 'Apple Silicon &middot; <a href="' + MAC_X64 + '">Intel Mac</a> &middot; <a href="' + WIN + '">Windows</a>'
+          : 'Intel &middot; <a href="' + MAC_ARM + '">Apple Silicon</a> &middot; <a href="' + WIN + '">Windows</a>';
+      }
+    } else if (isWindows && !isMobile) {
+      primary.href = WIN;
+      if (label) label.textContent = 'Download for Windows';
+      if (alt) {
+        alt.innerHTML = 'Windows 10/11 &middot; <a href="' + MAC_ARM + '">Apple Silicon</a> &middot; <a href="' + MAC_X64 + '">Intel Mac</a>';
+      }
+    } else {
+      // Mobile, Linux, or anything unrecognised: don't pretend to know. Send
+      // them to the download section where every option is laid out.
+      primary.href = '#download';
+      if (label) label.textContent = 'See downloads';
+      if (alt) alt.textContent = 'Stash runs on macOS and Windows';
+    }
+
+    // Keep the mid-page button in step with the hero one.
+    if (mid) {
+      mid.href = primary.href;
+      if (midLabel && label) midLabel.textContent = label.textContent;
     }
   })();
 
