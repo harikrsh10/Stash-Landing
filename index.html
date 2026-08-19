@@ -4,9 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Stash — Stop bouncing between apps to paste</title>
-<meta name="description" content="A clipboard manager that keeps your last 100 copies, holds a permanent library of prompts, and pulls text out of screenshots. Free for macOS and Windows." />
+<meta name="description" content="A clipboard manager that keeps your last 100 copies, holds a permanent library of prompts, and pulls text and colour out of screenshots. Keep each project's clips in its own session. Free for macOS and Windows." />
 <meta property="og:title" content="Stash — Stop bouncing between apps to paste" />
-<meta property="og:description" content="Everything you copy, quietly kept. Drag it into any app, build a prompt library that never ages out, pull text out of screenshots." />
+<meta property="og:description" content="Everything you copy, quietly kept. Drag it into any app, keep each project in its own session, pull text and colour straight out of a screenshot." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="https://stash-site.vercel.app/og-image.png" />
    <meta property="og:image:width" content="1200" />
@@ -39,6 +39,8 @@
     --tint-stack: #d4b56a;
     --tint-prompt: #b09aeb;
     --tint-speed: #e08a7a;
+    --tint-color: #6ad4c4;
+    --tint-session: #8fb4e8;
 
     --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -311,8 +313,14 @@
     border-radius: 12px;
     overflow: hidden;
   }
+  /* Eight cards across three columns leaves the last row one short, and this
+     grid draws its hairlines with a background colour — so an empty cell shows
+     up as a lit block rather than as nothing. The last card takes the slack. */
+  #features .feature:last-child { grid-column: span 2; }
+
   @media (max-width: 720px) {
     .features-grid { grid-template-columns: 1fr; }
+    #features .feature:last-child { grid-column: auto; }
   }
   .feature {
     background: var(--bg);
@@ -336,6 +344,8 @@
   .feature[data-tint="stack"]  .feature-tag { color: var(--tint-stack);  border-color: rgba(212,181,106,0.25); }
   .feature[data-tint="prompt"] .feature-tag { color: var(--tint-prompt); border-color: rgba(176,154,235,0.25); }
   .feature[data-tint="speed"]  .feature-tag { color: var(--tint-speed);  border-color: rgba(224,138,122,0.25); }
+  .feature[data-tint="color"]   .feature-tag { color: var(--tint-color);   border-color: rgba(106,212,196,0.25); }
+  .feature[data-tint="session"] .feature-tag { color: var(--tint-session); border-color: rgba(143,180,232,0.25); }
 
   .feature h3 {
     font-family: var(--sans);
@@ -623,6 +633,7 @@
     </a>
     <div class="nav-links">
       <a href="#features">Features</a>
+      <a href="#sessions">Sessions</a>
       <a href="#security">Security</a>
       <a href="#download" class="nav-cta">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -642,9 +653,10 @@
     </h1>
 
     <p class="subhead reveal r3">
-      Stash keeps your last 100 copies one keystroke away, holds onto the
-      prompts you reuse, and pulls text straight out of screenshots — no
-      switching, no retyping, no losing the thing you copied two minutes ago.
+      Stash keeps your last 100 copies one keystroke away, keeps each project's
+      clips in its own session, and pulls text and colour straight out of a
+      screenshot — no switching, no retyping, no losing the thing you copied
+      two minutes ago.
     </p>
 
     <div class="cta-row reveal r4">
@@ -686,7 +698,7 @@
     <div class="section-head">
       <p class="kicker">What Stash does</p>
       <h2>More than a clipboard — a place things you copy actually stay useful</h2>
-      <p>Six ways Stash earns the shortcut you'll use fifty times a day.</p>
+      <p>Eight ways Stash earns the shortcut you'll use fifty times a day.</p>
     </div>
     <div class="features-grid">
       <div class="feature" data-tint="url">
@@ -708,6 +720,16 @@
         <span class="feature-tag">extract</span>
         <h3>Pull text out of any screenshot</h3>
         <p>Copy an image, hit extract, and pick out just the text you need — read by the same engine as macOS and Windows themselves, not a bundled guess.</p>
+      </div>
+      <div class="feature" data-tint="color">
+        <span class="feature-tag">colour</span>
+        <h3>Lift the palette out of any image</h3>
+        <p>Press colour on a screenshot or a photo and get what it's actually made of — every swatch with its hex, ready to copy. No eyedropper, no guessing at a gradient.</p>
+      </div>
+      <div class="feature" data-tint="session">
+        <span class="feature-tag">sessions</span>
+        <h3>Keep each project's clips apart</h3>
+        <p>Name a session, set it collecting, and everything you copy lands there instead of the general pile. Switch between them as you switch projects — each one keeps its own clips, across restarts.</p>
       </div>
       <div class="feature" data-tint="code">
         <span class="feature-tag">secure</span>
@@ -731,6 +753,40 @@
         <span id="download-mid-label">Download Stash</span>
       </a>
     </div>
+  </section>
+
+  <section class="install" id="sessions">
+    <div class="section-head">
+      <p class="kicker">Sessions</p>
+      <h2>Three projects open at once, and none of their clips in each other's way</h2>
+      <p>Most days aren't one job. A session is a named place for one project's
+        references, copy and screenshots — so the moodboard you're building
+        doesn't fill up with the deck you're also writing.</p>
+    </div>
+
+    <ol class="install-steps">
+      <li>
+        <span class="step-num">01</span>
+        <div class="step-body">
+          <h4>Name a session for what you're working on</h4>
+          <p>One per client, per feature, per deck — however you already think about your work.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-num">02</span>
+        <div class="step-body">
+          <h4>Set it collecting, then just work</h4>
+          <p>Everything you copy lands in that session instead of the general pile. No filing, no dragging things into folders afterwards — you copy the way you already do.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-num">03</span>
+        <div class="step-body">
+          <h4>Switch projects, switch sessions</h4>
+          <p>Each one keeps its own clips — including its images — through quits and restarts. Come back next week and the references you gathered are still sitting together.</p>
+        </div>
+      </li>
+    </ol>
   </section>
 
   <section class="trust" id="security">
@@ -784,7 +840,7 @@
     </p>
   </section>
 
-  <section class="install">
+  <section class="install" id="walkthrough">
     <p class="install-title">First-run walkthrough</p>
 
     <div class="install-tabs" role="tablist">
@@ -930,8 +986,12 @@
 
   // Install walkthrough tabs — default to user's OS, allow manual switch
   (function() {
-    var tabs = document.querySelectorAll('.install-tab');
-    var panels = document.querySelectorAll('.install-steps');
+    // Scoped to the walkthrough: this hides any panel whose data-os doesn't
+    // match, so a step list elsewhere on the page would vanish on load.
+    var walkthrough = document.getElementById('walkthrough');
+    if (!walkthrough) return;
+    var tabs = walkthrough.querySelectorAll('.install-tab');
+    var panels = walkthrough.querySelectorAll('.install-steps');
     if (!tabs.length || !panels.length) return;
 
     function activate(os) {
