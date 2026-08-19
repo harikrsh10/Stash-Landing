@@ -1,0 +1,4 @@
+# Kept in the repo so the social card stays reproducible, but there is no
+# reason to serve the tooling that makes it. og-image.png itself is generated
+# from here and committed, so the deploy has everything it needs.
+scripts/
