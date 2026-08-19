@@ -592,6 +592,86 @@
   }
   .download-note b { color: var(--text-2); font-weight: 500; }
 
+  /* Download feedback.
+     A release asset is a 90MB cross-origin file behind two redirects, so a
+     plain link navigates the whole page and leaves it spinning for a second
+     or more before the browser works out it was a download all along —
+     Safari can sit there indefinitely. The script hands the fetch to a hidden
+     iframe instead, which means nothing visible happens at all. This is what
+     tells the person their click worked. */
+  .dl-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translate(-50%, 24px);
+    z-index: 60;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    max-width: min(560px, calc(100vw - 32px));
+    padding: 16px 20px;
+    border: 1px solid var(--border-2);
+    border-radius: 12px;
+    background: var(--surface-2);
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,0.9);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+  .dl-toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+
+  .dl-toast-mark {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--border-2);
+    border-top-color: var(--tint-url);
+    animation: dl-spin 0.8s linear infinite;
+    margin-top: 1px;
+  }
+  @keyframes dl-spin { to { transform: rotate(360deg); } }
+  .dl-toast.done .dl-toast-mark {
+    animation: none;
+    border-color: var(--tint-url);
+    background: var(--tint-url);
+    position: relative;
+  }
+  .dl-toast.done .dl-toast-mark::after {
+    content: "";
+    position: absolute;
+    left: 7px; top: 3px;
+    width: 6px; height: 11px;
+    border: solid var(--bg);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .dl-toast-body { min-width: 0; font-size: 14px; line-height: 1.5; }
+  .dl-toast-body strong { display: block; color: var(--text); font-weight: 600; margin-bottom: 3px; }
+  .dl-toast-body span { color: var(--text-2); }
+  .dl-toast-body a {
+    color: var(--text-2);
+    border-bottom: 1px dotted var(--border-2);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .dl-toast-body a:hover { color: var(--text); border-bottom-color: var(--text-2); }
+  .dl-toast-close {
+    flex-shrink: 0;
+    background: none; border: 0; cursor: pointer;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 4px;
+    transition: color 0.15s;
+  }
+  .dl-toast-close:hover { color: var(--text); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dl-toast { transition: opacity 0.01s; transform: translate(-50%, 0); }
+    .dl-toast-mark { animation: none; }
+  }
+
   /* Reveal animation */
   @keyframes rise {
     from { opacity: 0; transform: translateY(12px); }
@@ -899,6 +979,15 @@
     </ol>
   </section>
 
+  <div class="dl-toast" id="dlToast" role="status" aria-live="polite">
+    <span class="dl-toast-mark" aria-hidden="true"></span>
+    <div class="dl-toast-body">
+      <strong id="dlToastTitle">Starting your download…</strong>
+      <span id="dlToastNote">It should appear in your Downloads folder in a moment.</span>
+    </div>
+    <button class="dl-toast-close" id="dlToastClose" type="button" aria-label="Dismiss">×</button>
+  </div>
+
   <footer>
     <div>Stash · built by <a href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></div>
     <div class="footer-right">
@@ -910,6 +999,89 @@
 </div>
 
 <script>
+  // Downloads.
+  //
+  // A release asset is ~90MB on another origin, behind two redirects. Following
+  // a plain link navigates the whole page there, and the browser can't tell it
+  // is a download until the headers finally arrive — so the page sits in a
+  // loading state first, and Safari can stay there rather than recovering. That
+  // is the "clicked download, nothing happened" report.
+  //
+  // Handing the URL to a hidden iframe keeps the page exactly where it is: the
+  // browser sees Content-Disposition: attachment and passes the file to the
+  // download manager without ever navigating. The links keep their real href,
+  // so right-click → Save As, middle-click and no-JS all still work.
+  (function () {
+    var ASSET = /\/releases\/latest\/download\//;
+    var toast = document.getElementById('dlToast');
+    var title = document.getElementById('dlToastTitle');
+    var note = document.getElementById('dlToastNote');
+    var closeBtn = document.getElementById('dlToastClose');
+    var hideTimer, doneTimer;
+
+    function hide() {
+      if (!toast) return;
+      toast.classList.remove('show', 'done');
+      clearTimeout(hideTimer);
+      clearTimeout(doneTimer);
+    }
+    if (closeBtn) closeBtn.addEventListener('click', hide);
+
+    function announce(url, filename) {
+      if (!toast) return;
+      clearTimeout(hideTimer);
+      clearTimeout(doneTimer);
+      toast.classList.remove('done');
+      title.textContent = 'Starting your download…';
+      note.textContent = filename;
+      toast.classList.add('show');
+
+      // No cross-origin way to know the transfer began, so this is a plain
+      // reassurance beat rather than a claim about what the browser did — and
+      // the escape hatch is a real link, not a retry of the same thing.
+      doneTimer = setTimeout(function () {
+        toast.classList.add('done');
+        title.textContent = 'Download started';
+        note.innerHTML = 'Look in your Downloads folder. Nothing there? '
+          + '<a href="' + url + '">Download it directly</a>.';
+      }, 1600);
+
+      hideTimer = setTimeout(hide, 12000);
+    }
+
+    function pull(url) {
+      var frame = document.createElement('iframe');
+      frame.style.display = 'none';
+      frame.setAttribute('aria-hidden', 'true');
+      frame.src = url;
+      document.body.appendChild(frame);
+      // Left in place well past the handover; removing it early can cancel the
+      // transfer in some browsers.
+      setTimeout(function () {
+        if (frame.parentNode) frame.parentNode.removeChild(frame);
+      }, 120000);
+    }
+
+    // Mobile browsers handle an iframe download inconsistently — iOS Safari in
+    // particular. The stuck-page problem this works around is a desktop one, so
+    // phones keep the plain link they always had.
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
+    document.addEventListener('click', function (e) {
+      if (isMobile) return;
+      var link = e.target.closest ? e.target.closest('a[href]') : null;
+      if (!link) return;
+      var url = link.href;
+      if (!ASSET.test(url)) return;
+      // Leave the browser's own gestures alone: new tab, save as, etc.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+
+      e.preventDefault();
+      pull(url);
+      announce(url, url.split('/').pop());
+    });
+  })();
+
   // OS detection — picks the right primary download.
   //
   // The button's href in the HTML is already a real installer, not the releases
