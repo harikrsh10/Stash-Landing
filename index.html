@@ -622,24 +622,34 @@
     position: relative;
     aspect-ratio: 5 / 4;
     max-height: 460px;
-    border: 1px dashed var(--line-2);
     border-radius: var(--r-lg);
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
     overflow: hidden;
   }
   .visual-slot figure {
     position: absolute;
     inset: 0;
     margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s var(--ease), visibility 0s linear 0.35s;
+  }
+  .visual-slot figure.is-placeholder {
     display: grid;
     place-content: center;
     gap: 14px;
     padding: 32px;
     text-align: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.35s var(--ease), visibility 0s linear 0.35s;
+    border: 1px dashed var(--line-2);
+    border-radius: var(--r-lg);
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+  }
+  /* contain rather than cover: the artwork carries its own frame and margin,
+     and cropping into either is what would make it look wrong. */
+  .visual-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
   }
   .visual-slot figure.is-shown { opacity: 1; visibility: visible; transition-delay: 0s; }
   .visual-chip {
@@ -1319,14 +1329,14 @@
       <div class="switcher">
         <div class="visual-slot switcher-visual" aria-hidden="true">
           <figure id="fig-creative-0" class="is-shown">
-            <span class="visual-chip">Visual placeholder</span>
-            <figcaption>A deck of screenshots being gathered in the drawer, then dragged into Figma in one motion.</figcaption>
+            <img src="visual-gather-stack.webp" width="1100" height="933" alt=""
+                 loading="lazy" decoding="async">
           </figure>
-          <figure id="fig-creative-1">
+          <figure id="fig-creative-1" class="is-placeholder">
             <span class="visual-chip">Visual placeholder</span>
             <figcaption>The colour panel open beside a screenshot, swatches with hex values being picked out.</figcaption>
           </figure>
-          <figure id="fig-creative-2">
+          <figure id="fig-creative-2" class="is-placeholder">
             <span class="visual-chip">Visual placeholder</span>
             <figcaption>Two sessions side by side, each holding its own project's references.</figcaption>
           </figure>
@@ -1364,15 +1374,15 @@
          aria-labelledby="ptab-engineer" data-persona="engineer" tabindex="0">
       <div class="switcher">
         <div class="visual-slot switcher-visual" aria-hidden="true">
-          <figure id="fig-engineer-0" class="is-shown">
+          <figure id="fig-engineer-0" class="is-placeholder is-shown">
             <span class="visual-chip">Visual placeholder</span>
             <figcaption>Text blocks outlined on a spec screenshot, selected pieces assembling below.</figcaption>
           </figure>
-          <figure id="fig-engineer-1">
+          <figure id="fig-engineer-1" class="is-placeholder">
             <span class="visual-chip">Visual placeholder</span>
             <figcaption>The session picker open on a clip, showing which sessions already hold it.</figcaption>
           </figure>
-          <figure id="fig-engineer-2">
+          <figure id="fig-engineer-2" class="is-placeholder">
             <span class="visual-chip">Visual placeholder</span>
             <figcaption>The prompts section with tags, filtered down to one tag.</figcaption>
           </figure>
@@ -1410,15 +1420,15 @@
          aria-labelledby="ptab-developer" data-persona="developer" tabindex="0">
       <div class="switcher">
         <div class="visual-slot switcher-visual" aria-hidden="true">
-          <figure id="fig-developer-0" class="is-shown">
+          <figure id="fig-developer-0" class="is-placeholder is-shown">
             <span class="visual-chip">Visual placeholder</span>
             <figcaption>A key being copied and quietly skipped, the footer dot pulsing to confirm.</figcaption>
           </figure>
-          <figure id="fig-developer-1">
+          <figure id="fig-developer-1" class="is-placeholder">
             <span class="visual-chip">Visual placeholder</span>
             <figcaption>A screenshot of a stack trace with its lines outlined and selectable.</figcaption>
           </figure>
-          <figure id="fig-developer-2">
+          <figure id="fig-developer-2" class="is-placeholder">
             <span class="visual-chip">Visual placeholder</span>
             <figcaption>The drawer sliding in, a search narrowing a long history to one result.</figcaption>
           </figure>
