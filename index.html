@@ -538,8 +538,11 @@
   .card-icon.is-safe { color: var(--safe); background: var(--safe-soft); }
 
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  /* Seven cards over four columns: two leads at half width, four standard,
+     and the last one full width rather than left as a stub in a ragged row. */
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .grid-4 > .is-wide { grid-column: span 2; }
+  .grid-4 > .is-full { grid-column: 1 / -1; }
   @media (max-width: 940px) {
     .grid-3 { grid-template-columns: 1fr; }
     .grid-4 { grid-template-columns: repeat(2, 1fr); }
@@ -547,8 +550,46 @@
   }
   @media (max-width: 620px) {
     .grid-4 { grid-template-columns: 1fr; }
-    .grid-4 > .is-wide { grid-column: auto; }
+    .grid-4 > .is-wide, .grid-4 > .is-full { grid-column: auto; }
   }
+
+  /* The lead cards carry the illustration instead of an icon — two marks for
+     one idea is one too many, and the visual is the better of the two. */
+  .card-visual {
+    aspect-ratio: 16 / 9;
+    margin: -4px 0 22px;
+    border: 1px dashed var(--line-2);
+    border-radius: var(--r-md);
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+    display: grid;
+    place-content: center;
+    gap: 12px;
+    padding: 26px;
+    text-align: center;
+  }
+  .card-visual figcaption {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 32ch;
+    margin-inline: auto;
+    text-wrap: pretty;
+  }
+
+  /* The closer states the shortcut, so it shows the shortcut rather than
+     describing a picture of one. */
+  .card.is-full {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .card.is-full .card-body { max-width: 62ch; }
+  .card-keys { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .card-keys kbd { font-size: 16px; padding: 8px 14px; }
+  .card-keys .plus { color: var(--muted); font-family: var(--mono); font-size: 13px; }
 
   /* =====================================================================
      Problem switcher
@@ -1432,27 +1473,24 @@
     <div class="section-head reveal">
       <p class="kicker">What it does</p>
       <h2 class="title">More than a clipboard</h2>
-      <p class="lead">Eight ways Stash earns the shortcut you'll use fifty times a day.</p>
+      <p class="lead">Seven ways Stash earns the shortcut you'll use fifty times a day.</p>
     </div>
 
     <div class="grid-4">
       <article class="card is-wide reveal">
-        <span class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 4h4a2 2 0 0 1 2 2v4"/><path d="M20 6l-8 8"/>
-            <path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/>
-          </svg>
-        </span>
+        <figure class="card-visual" aria-hidden="true">
+          <span class="visual-chip">Visual placeholder</span>
+          <figcaption>A clip being dragged out of the drawer and dropped into VS Code.</figcaption>
+        </figure>
         <h3>Drag straight into any app</h3>
         <p>Pull a clip out of Stash and drop it directly into VS Code, Figma, Notion &mdash; anywhere that accepts text or images. No copy-paste round-trip.</p>
       </article>
 
       <article class="card is-wide reveal" style="--d: 80ms">
-        <span class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/><path d="m3 17.5 9 5 9-5"/>
-          </svg>
-        </span>
+        <figure class="card-visual" aria-hidden="true">
+          <span class="visual-chip">Visual placeholder</span>
+          <figcaption>Clips flying into a deck above the footer, then dragged in together.</figcaption>
+        </figure>
         <h3>Gather a stack, drop it in one go</h3>
         <p>&#8984;-click a handful of clips &mdash; screenshots, snippets, whatever &mdash; and drag the whole stack into Figma, an AI chat, or a folder. Everything lands at once.</p>
       </article>
@@ -1498,24 +1536,19 @@
         <p>Name a session, set it collecting, and everything you copy lands there instead of the general pile &mdash; across restarts.</p>
       </article>
 
-      <article class="card is-wide reveal">
-        <span class="card-icon is-safe" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/>
-          </svg>
-        </span>
-        <h3>Skips secrets automatically</h3>
-        <p>API keys, JWTs and card numbers are detected and excluded before they're ever stored. Stops accidental leaks during screen-shares.</p>
-      </article>
-
-      <article class="card is-wide reveal" style="--d: 80ms">
-        <span class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>
-          </svg>
-        </span>
-        <h3>One shortcut, gone in a flash</h3>
-        <p>The drawer opens, you pick the clip, it closes itself. No window to manage, no app to alt-tab to, no flow broken.</p>
+      <article class="card is-full reveal">
+        <div class="card-body">
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>
+            </svg>
+          </span>
+          <h3>One shortcut, gone in a flash</h3>
+          <p>The drawer opens, you pick the clip, it closes itself. No window to manage, no app to alt-tab to, no flow broken.</p>
+        </div>
+        <div class="card-keys" aria-hidden="true">
+          <kbd>&#8984;</kbd><span class="plus">+</span><kbd>&#8679;</kbd><span class="plus">+</span><kbd>V</kbd>
+        </div>
       </article>
     </div>
   </section>
