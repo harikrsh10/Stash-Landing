@@ -316,6 +316,53 @@
     .btn-ghost:hover { background: rgba(255,255,255,0.14); border-color: var(--line-2); }
   }
 
+  /* Reads as a link rather than a second button, so the download beside it
+     stays the only filled thing in the fold. The ring is what keeps it a
+     control: without a shape of its own it would be a line of text that
+     happens to be clickable. */
+  .btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    padding: 11px 8px;
+    background: none;
+    border: 0;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: color 0.15s var(--ease), scale 0.12s var(--ease);
+  }
+  .btn-link:active { scale: 0.96; }
+  .btn-link .play-ring {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line-2);
+    border-radius: 50%;
+    color: var(--text-2);
+    transition: border-color 0.15s var(--ease), background 0.15s var(--ease), color 0.15s var(--ease);
+  }
+  /* A play triangle's visual mass sits left of its box, so it needs the nudge
+     to look centred in a circle. */
+  .btn-link .play-ring svg { width: 12px; height: 12px; translate: 1px 0; }
+  .btn-link .btn-link-label {
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: border-color 0.15s var(--ease);
+  }
+  @media (hover: hover) {
+    .btn-link:hover .play-ring {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .btn-link:hover .btn-link-label { border-bottom-color: var(--line-2); }
+  }
+
   /* =====================================================================
      Hero — the clip field
      ---------------------------------------------------------------------
@@ -1588,7 +1635,12 @@
             </svg>
             <span id="download-label">Download Stash</span>
           </a>
-          <a href="#how" class="btn btn-ghost">See how it works</a>
+          <a href="#how" class="btn-link">
+            <span class="play-ring" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5-12-7.5Z"/></svg>
+            </span>
+            <span class="btn-link-label">See how it works</span>
+          </a>
         </div>
         <p class="hero-alt reveal" id="download-alt" style="--d: 250ms">
           <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">Intel Mac</a>
