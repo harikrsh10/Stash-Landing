@@ -759,72 +759,84 @@
   .card-icon.is-safe { color: var(--safe); background: var(--safe-soft); }
 
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  /* Seven cards over four columns: two leads at half width, four standard,
-     and the last one full width rather than left as a stub in a ragged row. */
-  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .grid-4 > .is-wide { grid-column: span 2; }
-  .grid-4 > .is-full { grid-column: 1 / -1; }
-  @media (max-width: 940px) {
-    .grid-3 { grid-template-columns: 1fr; }
-    .grid-4 { grid-template-columns: repeat(2, 1fr); }
-    .grid-4 > .is-wide { grid-column: span 2; }
+  /* Its collapse used to share a media query with the old feature grid and
+     went out when that was replaced, leaving three columns at every width
+     and 457px of content in a 320px viewport. */
+  @media (max-width: 940px) { .grid-3 { grid-template-columns: 1fr; } }
+  /* =====================================================================
+     Feature cards
+     ---------------------------------------------------------------------
+     Panel on top, words underneath. The panel bleeds to the card's edges, so
+     the card carries no padding of its own and the text block brings its own.
+     Inset, it would read as a picture pinned to a card rather than part of it.
+
+     Seven cards over six columns as 3+3 / 2+2+2 / 3+3: three full rows and no
+     stub. The panel holds an icon for now, and each one is a slot a real
+     illustration drops into without the layout moving.
+     ===================================================================== */
+  .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+  .grid-6 > .col-3 { grid-column: span 3; }
+  .grid-6 > .col-2 { grid-column: span 2; }
+  @media (max-width: 980px) {
+    .grid-6 { grid-template-columns: repeat(2, 1fr); }
+    .grid-6 > .col-3, .grid-6 > .col-2 { grid-column: span 1; }
+    /* Seven over two columns leaves the last one alone, so it takes the row. */
+    .grid-6 > *:last-child { grid-column: span 2; }
   }
   @media (max-width: 620px) {
-    .grid-4 { grid-template-columns: 1fr; }
-    .grid-4 > .is-wide, .grid-4 > .is-full { grid-column: auto; }
+    .grid-6 { grid-template-columns: 1fr; }
+    .grid-6 > .col-3, .grid-6 > .col-2, .grid-6 > *:last-child { grid-column: auto; }
   }
 
-  /* The lead cards carry the illustration instead of an icon — two marks for
-     one idea is one too many, and the visual is the better of the two. */
-  .card-visual {
-    aspect-ratio: 16 / 9;
-    margin: -4px 0 22px;
-    border: 1px dashed var(--line-2);
-    border-radius: var(--r-md);
-    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+  .card.is-media { padding: 0; overflow: hidden; }
+  .card-media {
+    aspect-ratio: 16 / 10;
     display: grid;
-    place-content: center;
-    gap: 12px;
-    padding: 26px;
-    text-align: center;
+    place-items: center;
+    border-block-end: 1px solid var(--line);
+    /* A faint rule grid under a warm wash, so the panel reads as a surface
+       rather than a flat block of colour. */
+    background:
+      linear-gradient(180deg, rgba(255, 138, 76, 0.07), rgba(255, 138, 76, 0.015)),
+      repeating-linear-gradient(0deg, transparent 0 47px, rgba(255,255,255,0.028) 47px 48px),
+      repeating-linear-gradient(90deg, transparent 0 47px, rgba(255,255,255,0.028) 47px 48px),
+      #0b0b0b;
   }
-  /* Belongs to the feature cards' placeholders. It used to live with the
-     problem switcher's slot styles and went out with them, leaving the two
-     lead cards using a class with nothing behind it. */
-  .visual-chip {
-    justify-self: center;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--accent);
+  .card-media-icon {
+    width: 68px;
+    height: 68px;
+    display: grid;
+    place-items: center;
     border: 1px solid var(--accent-line);
-    background: var(--accent-soft);
-    border-radius: var(--r-pill);
-    padding: 5px 12px;
+    border-radius: 18px;
+    background: rgba(255, 138, 76, 0.1);
+    color: var(--accent);
+    box-shadow: 0 18px 46px -18px rgba(255, 138, 76, 0.5);
   }
-  .card-visual figcaption {
-    font-family: var(--mono);
-    font-size: 12px;
-    line-height: 1.7;
-    color: var(--muted);
-    max-width: 32ch;
-    margin-inline: auto;
+  .card-media-icon svg { width: 30px; height: 30px; display: block; }
+
+  .card-text { padding: 26px 26px 30px; }
+  .card-text h3 {
+    font-family: var(--sans);
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+    margin: 0 0 10px;
+    color: var(--text);
+    text-wrap: balance;
+  }
+  .card-text p {
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: 1.65;
+    color: var(--text-2);
     text-wrap: pretty;
   }
 
-  /* The closer states the shortcut, so it shows the shortcut rather than
-     describing a picture of one. */
-  .card.is-full {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 32px;
-    flex-wrap: wrap;
-  }
-  .card.is-full .card-body { max-width: 62ch; }
-  .card-keys { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .card-keys kbd { font-size: 16px; padding: 8px 14px; }
+  /* The closer is about a keystroke, so its panel shows the keystroke. */
+  .card-keys { display: flex; align-items: center; gap: 9px; }
+  .card-keys kbd { font-size: 17px; padding: 10px 15px; }
   .card-keys .plus { color: var(--muted); font-family: var(--mono); font-size: 13px; }
 
   /* =====================================================================
@@ -1540,78 +1552,86 @@
       <p class="lead">Seven ways Stash earns the shortcut you'll use fifty times a day.</p>
     </div>
 
-    <div class="grid-4">
-      <article class="card is-wide reveal">
-        <figure class="card-visual" aria-hidden="true">
-          <span class="visual-chip">Visual placeholder</span>
-          <figcaption>A clip being dragged out of the drawer and dropped into VS Code.</figcaption>
-        </figure>
-        <h3>Drag straight into any app</h3>
-        <p>Pull a clip out of Stash and drop it directly into VS Code, Figma, Notion &mdash; anywhere that accepts text or images. No copy-paste round-trip.</p>
-      </article>
-
-      <article class="card is-wide reveal" style="--d: 80ms">
-        <figure class="card-visual" aria-hidden="true">
-          <span class="visual-chip">Visual placeholder</span>
-          <figcaption>Clips flying into a deck above the footer, then dragged in together.</figcaption>
-        </figure>
-        <h3>Gather a stack, drop it in one go</h3>
-        <p>&#8984;-click a handful of clips &mdash; screenshots, snippets, whatever &mdash; and drag the whole stack into Figma, an AI chat, or a folder. Everything lands at once.</p>
-      </article>
-
-      <article class="card reveal">
-        <span class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3v18M3 12h18"/><path d="m5.6 5.6 12.8 12.8M18.4 5.6 5.6 18.4"/>
-          </svg>
-        </span>
-        <h3>A prompt library that doesn't age out</h3>
-        <p>Mark a clip once and it's permanent &mdash; tagged, searchable, and never pushed out by the next hundred things you copy.</p>
-      </article>
-
-      <article class="card reveal" style="--d: 80ms">
-        <span class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h7M7 17h4"/>
-          </svg>
-        </span>
-        <h3>Pull text out of any screenshot</h3>
-        <p>Copy an image, hit extract, and pick out just the text you need &mdash; read by the same engine as macOS and Windows themselves.</p>
-      </article>
-
-      <article class="card reveal" style="--d: 160ms">
-        <span class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3c5 0 9 3.6 9 8 0 2.5-2 4-4 4h-1.5a1.75 1.75 0 0 0-1.2 3 1.75 1.75 0 0 1-1.3 3c-5 0-9-3.6-9-8s4-10 8-10Z"/>
-            <circle cx="8.5" cy="10.5" r="1"/><circle cx="12.5" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/>
-          </svg>
-        </span>
-        <h3>Lift the palette out of any image</h3>
-        <p>Press colour on a screenshot and get what it's actually made of &mdash; every swatch with its hex, ready to copy. No eyedropper, no guessing.</p>
-      </article>
-
-      <article class="card reveal" style="--d: 240ms">
-        <span class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 8V6a2 2 0 0 1 2-2h3.5l2 2.5H19a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z"/><path d="M3 11h18"/>
-          </svg>
-        </span>
-        <h3>Keep each project's clips apart</h3>
-        <p>Name a session, set it collecting, and everything you copy lands there instead of the general pile &mdash; across restarts.</p>
-      </article>
-
-      <article class="card is-full reveal">
-        <div class="card-body">
-          <span class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>
-            </svg>
+    <div class="grid-6">
+      <article class="card is-media col-3 reveal">
+        <div class="card-media" aria-hidden="true">
+          <span class="card-media-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v4"/><path d="M20 6l-8 8"/><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/></svg>
           </span>
+        </div>
+        <div class="card-text">
+          <h3>Drag straight into any app</h3>
+          <p>Pull a clip out of Stash and drop it directly into VS Code, Figma, Notion &mdash; anywhere that accepts text or images. No copy-paste round-trip.</p>
+        </div>
+      </article>
+
+      <article class="card is-media col-3 reveal" style="--d: 80ms">
+        <div class="card-media" aria-hidden="true">
+          <span class="card-media-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/><path d="m3 17.5 9 5 9-5"/></svg>
+          </span>
+        </div>
+        <div class="card-text">
+          <h3>Gather a stack, drop it in one go</h3>
+          <p>&#8984;-click a handful of clips &mdash; screenshots, snippets, whatever &mdash; and drag the whole stack into Figma, an AI chat, or a folder. Everything lands at once.</p>
+        </div>
+      </article>
+
+      <article class="card is-media col-2 reveal">
+        <div class="card-media" aria-hidden="true">
+          <span class="card-media-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><path d="m5.6 5.6 12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
+          </span>
+        </div>
+        <div class="card-text">
+          <h3>A prompt library that doesn't age out</h3>
+          <p>Mark a clip once and it's permanent &mdash; tagged, searchable, and never pushed out by the next hundred things you copy.</p>
+        </div>
+      </article>
+
+      <article class="card is-media col-2 reveal" style="--d: 80ms">
+        <div class="card-media" aria-hidden="true">
+          <span class="card-media-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h7M7 17h4"/></svg>
+          </span>
+        </div>
+        <div class="card-text">
+          <h3>Pull text out of any screenshot</h3>
+          <p>Copy an image, hit extract, and pick out just the text you need &mdash; read by the same engine as macOS and Windows themselves.</p>
+        </div>
+      </article>
+
+      <article class="card is-media col-2 reveal" style="--d: 160ms">
+        <div class="card-media" aria-hidden="true">
+          <span class="card-media-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c5 0 9 3.6 9 8 0 2.5-2 4-4 4h-1.5a1.75 1.75 0 0 0-1.2 3 1.75 1.75 0 0 1-1.3 3c-5 0-9-3.6-9-8s4-10 8-10Z"/><circle cx="8.5" cy="10.5" r="1"/><circle cx="12.5" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>
+          </span>
+        </div>
+        <div class="card-text">
+          <h3>Lift the palette out of any image</h3>
+          <p>Press colour on a screenshot and get what it's actually made of &mdash; every swatch with its hex, ready to copy. No eyedropper, no guessing.</p>
+        </div>
+      </article>
+
+      <article class="card is-media col-3 reveal">
+        <div class="card-media" aria-hidden="true">
+          <span class="card-media-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V6a2 2 0 0 1 2-2h3.5l2 2.5H19a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z"/><path d="M3 11h18"/></svg>
+          </span>
+        </div>
+        <div class="card-text">
+          <h3>Keep each project's clips apart</h3>
+          <p>Name a session, set it collecting, and everything you copy lands there instead of the general pile &mdash; across restarts.</p>
+        </div>
+      </article>
+
+      <article class="card is-media col-3 reveal" style="--d: 80ms">
+        <div class="card-media" aria-hidden="true">
+          <div class="card-keys"><kbd>&#8984;</kbd><span class="plus">+</span><kbd>&#8679;</kbd><span class="plus">+</span><kbd>V</kbd></div>
+        </div>
+        <div class="card-text">
           <h3>One shortcut, gone in a flash</h3>
           <p>The drawer opens, you pick the clip, it closes itself. No window to manage, no app to alt-tab to, no flow broken.</p>
-        </div>
-        <div class="card-keys" aria-hidden="true">
-          <kbd>&#8984;</kbd><span class="plus">+</span><kbd>&#8679;</kbd><span class="plus">+</span><kbd>V</kbd>
         </div>
       </article>
     </div>
