@@ -546,7 +546,7 @@
   }
   .badge svg { width: 14px; height: 14px; color: var(--accent); flex-shrink: 0; }
 
-  .hero-side p {
+  .hero-lead {
     margin: 0 0 24px;
     font-size: var(--fs-lead);
     line-height: 1.55;
@@ -559,8 +559,12 @@
     font-family: var(--mono);
     font-size: var(--fs-sm);
     color: var(--muted);
-    margin: 16px 0 0;
+    margin: 26px 0 0;
+    white-space: nowrap;
   }
+  /* Below the point the longest variant fits on one line, let it wrap rather
+     than run off the edge. Windows is the long one at 320px. */
+  @media (max-width: 420px) { .hero-alt { white-space: normal; } }
   .hero-alt a {
     color: var(--text-2);
     padding: 4px 2px;
@@ -1600,7 +1604,7 @@
       </div>
 
       <div class="hero-side">
-        <p class="reveal" style="--d: 140ms">
+        <p class="hero-lead reveal" style="--d: 140ms">
           Images, colours, text, code and links — your last 100 copies, one
           keystroke away and draggable straight into whatever you were already
           working in.
