@@ -500,12 +500,12 @@
   .hero-foot {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 384px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
     gap: 32px 56px;
     align-items: end;
     padding-block: 120px clamp(48px, 6vw, 76px);
   }
-  @media (max-width: 860px) {
+  @media (max-width: 1024px) {
     .hero-foot { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   }
 
@@ -532,7 +532,7 @@
     text-wrap: pretty;
   }
 
-  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .hero-alt {
     font-family: var(--mono);
     font-size: var(--fs-sm);
