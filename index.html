@@ -218,13 +218,13 @@
   .nav-cta:active { scale: 0.96; }
   .nav-cta svg { width: 15px; height: 15px; }
 
-  /* Breakpoints measured off the pill itself rather than picked: it is 606px
-     wide with all four links, 449px with the two optional ones out, and 272px
-     with the brand and the button alone. The shell adds 32px of inline
-     padding, so each break sits just above the width its layout stops fitting.
-     The links go before the button does — at the narrow end the pill has to
-     hold a brand and a download, and nothing else is worth the width. */
-  @media (max-width: 660px) { .nav-links a[data-optional] { display: none; } }
+  /* Breakpoints measured off the pill itself rather than picked: with the
+     three links it is 513px wide, 449px with FAQ out, and 272px with the
+     brand and the button alone. The shell adds 32px of inline padding, so
+     each break sits just above the width its layout stops fitting. The links
+     go before the button does — at the narrow end the pill has to hold a
+     brand and a download, and nothing else is worth the width. */
+  @media (max-width: 560px) { .nav-links a[data-optional] { display: none; } }
   @media (max-width: 500px) { .nav-links { display: none; } }
 
   /* =====================================================================
@@ -1147,7 +1147,6 @@
     </a>
     <div class="nav-links">
       <a href="#features">Features</a>
-      <a href="#sessions" data-optional>Sessions</a>
       <a href="#security">Security</a>
       <a href="#faq" data-optional>FAQ</a>
     </div>
@@ -1521,38 +1520,6 @@
     </div>
   </section>
 
-  <!-- ===================== Sessions ===================== -->
-  <section class="section wrap" id="sessions">
-    <div class="section-head reveal">
-      <p class="kicker">Sessions</p>
-      <h2 class="title">Three projects at once, and none of their clips in <span class="ital">each other's</span> way</h2>
-      <p class="lead">Most days aren't one job. A session is a named place for one project's references, copy and screenshots.</p>
-    </div>
-    <ol class="steps">
-      <li class="reveal">
-        <span class="step-num">01</span>
-        <div class="step-body">
-          <h3>Name a session for what you're working on</h3>
-          <p>One per client, per feature, per deck &mdash; however you already think about your work.</p>
-        </div>
-      </li>
-      <li class="reveal" style="--d: 80ms">
-        <span class="step-num">02</span>
-        <div class="step-body">
-          <h3>Set it collecting, then just work</h3>
-          <p>Everything you copy lands in that session instead of the general pile. No filing, no dragging things into folders afterwards.</p>
-        </div>
-      </li>
-      <li class="reveal" style="--d: 160ms">
-        <span class="step-num">03</span>
-        <div class="step-body">
-          <h3>Switch projects, switch sessions</h3>
-          <p>Each one keeps its own clips &mdash; including its images &mdash; through quits and restarts. Come back next week and they're still sitting together.</p>
-        </div>
-      </li>
-    </ol>
-  </section>
-
   <!-- ===================== Security ===================== -->
   <section class="section wrap" id="security">
     <div class="section-head reveal">
@@ -1816,7 +1783,6 @@
         <h2 id="foot-page">Page</h2>
         <ul>
           <li><a href="#features">Features</a></li>
-          <li><a href="#sessions">Sessions</a></li>
           <li><a href="#security">Security</a></li>
           <li><a href="#faq">FAQ</a></li>
           <li><a href="#download">Download</a></li>
