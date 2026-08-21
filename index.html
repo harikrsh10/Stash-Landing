@@ -424,6 +424,89 @@
   }
   .clip-body img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+  /* Generated cards. A swatch is a colour and its own hex, a code card is a
+     snippet in a window, a link card is a domain and its path — the three
+     clipboard kinds the field would otherwise only be able to show as
+     photographs of themselves. Every label colour is chosen against its own
+     ground: the lowest here measures 8.32:1.
+     ===================================================================== */
+  .clip-swatch {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: var(--sw);
+  }
+  .clip-swatch b {
+    position: absolute;
+    inset-block-end: 10px;
+    inset-inline-start: 11px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--sw-ink);
+  }
+
+  .clip-code {
+    display: block;
+    height: 100%;
+    padding: 11px 0 0;
+    background: #101012;
+  }
+  .clip-code u {
+    display: flex;
+    gap: 5px;
+    padding: 0 12px 10px;
+    text-decoration: none;
+  }
+  .clip-code u i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+  }
+  .clip-code pre {
+    margin: 0;
+    padding: 0 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.46);
+    white-space: pre;
+    overflow: hidden;
+  }
+  .clip-code pre b { color: var(--accent); font-weight: 400; }
+  .clip-code pre em { color: var(--safe); font-style: normal; }
+
+  .clip-link {
+    display: grid;
+    align-content: start;
+    gap: 9px;
+    height: 100%;
+    padding: 14px;
+  }
+  .clip-link i {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+  }
+  .clip-link b {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.74);
+  }
+  .clip-link span {
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.4);
+    overflow-wrap: anywhere;
+  }
+
   /* A scrim rather than a flat panel: the field stays visible behind the copy,
      but everything under the text is pushed to near-black so the contrast is a
      measured number rather than a hope. */
@@ -1357,8 +1440,8 @@
           <div class="clip" style="--ar: 1 / 1; --tilt: -0.9deg">
             <span class="clip-body"><img src="clip-card-circle.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 1 / 1; --tilt: 0.5deg">
-            <span class="clip-body"><img src="clip-profile-card.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 4 / 5; --tilt: 1.2deg">
+            <span class="clip-body"><span class="clip-link"><i></i><b>developer.apple.com</b><span>documentation/vision</span></span></span>
           </div>
           <div class="clip" style="--ar: 2 / 3; --tilt: -1.2deg">
             <span class="clip-body"><img src="clip-poster-a83.webp" width="560" height="840" alt="" loading="lazy" decoding="async"></span>
@@ -1369,94 +1452,126 @@
           <div class="clip" style="--ar: 1 / 1; --tilt: -0.9deg">
             <span class="clip-body"><img src="clip-card-circle.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 1 / 1; --tilt: 0.5deg">
-            <span class="clip-body"><img src="clip-profile-card.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 4 / 5; --tilt: 1.2deg">
+            <span class="clip-body"><span class="clip-link"><i></i><b>developer.apple.com</b><span>documentation/vision</span></span></span>
           </div>
         </div>
         <div class="cf-col" style="--dur: 124s">
           <div class="clip" style="--ar: 1 / 1; --tilt: 0.9deg">
-            <span class="clip-body"><img src="clip-copy-paste.webp" width="560" height="558" alt="" loading="lazy" decoding="async"></span>
+            <span class="clip-body"><span class="clip-swatch" style="--sw: #ff8a4c; --sw-ink: #0d0d0d"><b>#FF8A4C</b></span></span>
           </div>
-          <div class="clip" style="--ar: 2 / 3; --tilt: -1deg">
-            <span class="clip-body"><img src="clip-portrait.webp" width="560" height="814" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -1deg">
+            <span class="clip-body"><span class="clip-link"><i></i><b>figma.com</b><span>file/wY2k/Moodboard-Q3</span></span></span>
           </div>
-          <div class="clip" style="--ar: 2 / 3; --tilt: 1deg">
-            <span class="clip-body"><img src="clip-poster-bloom.webp" width="560" height="840" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.6deg">
+            <span class="clip-body"><span class="clip-code"><u><i></i><i></i><i></i></u><pre><b>@media</b> (hover: hover) {
+  .card:hover {
+    border-color: <em>#2f2f2f</em>;
+  }
+}</pre></span></span>
           </div>
-          <div class="clip" style="--ar: 4 / 5; --tilt: 1.2deg">
-            <span class="clip-body"><img src="clip-palette-sandy.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 4 / 5; --tilt: -0.6deg">
+            <span class="clip-body"><img src="clip-snippet-ocean.webp" width="560" height="678" alt="" loading="lazy" decoding="async"></span>
           </div>
           <div class="clip" style="--ar: 1 / 1; --tilt: 0.9deg">
-            <span class="clip-body"><img src="clip-copy-paste.webp" width="560" height="558" alt="" loading="lazy" decoding="async"></span>
+            <span class="clip-body"><span class="clip-swatch" style="--sw: #ff8a4c; --sw-ink: #0d0d0d"><b>#FF8A4C</b></span></span>
           </div>
-          <div class="clip" style="--ar: 2 / 3; --tilt: -1deg">
-            <span class="clip-body"><img src="clip-portrait.webp" width="560" height="814" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -1deg">
+            <span class="clip-body"><span class="clip-link"><i></i><b>figma.com</b><span>file/wY2k/Moodboard-Q3</span></span></span>
           </div>
-          <div class="clip" style="--ar: 2 / 3; --tilt: 1deg">
-            <span class="clip-body"><img src="clip-poster-bloom.webp" width="560" height="840" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.6deg">
+            <span class="clip-body"><span class="clip-code"><u><i></i><i></i><i></i></u><pre><b>@media</b> (hover: hover) {
+  .card:hover {
+    border-color: <em>#2f2f2f</em>;
+  }
+}</pre></span></span>
           </div>
-          <div class="clip" style="--ar: 4 / 5; --tilt: 1.2deg">
-            <span class="clip-body"><img src="clip-palette-sandy.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 4 / 5; --tilt: -0.6deg">
+            <span class="clip-body"><img src="clip-snippet-ocean.webp" width="560" height="678" alt="" loading="lazy" decoding="async"></span>
           </div>
         </div>
         <div class="cf-col" style="--dur: 82s">
           <div class="clip" style="--ar: 4 / 5; --tilt: 0.6deg">
             <span class="clip-body"><img src="clip-dash-conversion.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 1 / 1; --tilt: 0.7deg">
-            <span class="clip-body"><img src="clip-kerning.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -0.5deg">
+            <span class="clip-body"><img src="clip-impact-report.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 1 / 1; --tilt: -1.1deg">
-            <span class="clip-body"><img src="clip-stack-list.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 2 / 3; --tilt: 1deg">
+            <span class="clip-body"><img src="clip-poster-bloom.webp" width="560" height="840" alt="" loading="lazy" decoding="async"></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.7deg">
+            <span class="clip-body"><span class="clip-code"><u><i></i><i></i><i></i></u><pre><b>npm</b> run dist
+<em>&#10003;</em> Stash-win-x64.exe</pre></span></span>
           </div>
           <div class="clip" style="--ar: 4 / 5; --tilt: 0.6deg">
             <span class="clip-body"><img src="clip-dash-conversion.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 1 / 1; --tilt: 0.7deg">
-            <span class="clip-body"><img src="clip-kerning.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -0.5deg">
+            <span class="clip-body"><img src="clip-impact-report.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 1 / 1; --tilt: -1.1deg">
-            <span class="clip-body"><img src="clip-stack-list.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 2 / 3; --tilt: 1deg">
+            <span class="clip-body"><img src="clip-poster-bloom.webp" width="560" height="840" alt="" loading="lazy" decoding="async"></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.7deg">
+            <span class="clip-body"><span class="clip-code"><u><i></i><i></i><i></i></u><pre><b>npm</b> run dist
+<em>&#10003;</em> Stash-win-x64.exe</pre></span></span>
           </div>
         </div>
         <div class="cf-col" style="--dur: 138s">
-          <div class="clip" style="--ar: 4 / 5; --tilt: -0.8deg">
-            <span class="clip-body"><img src="clip-design-files.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.8deg">
+            <span class="clip-body"><span class="clip-code"><u><i></i><i></i><i></i></u><pre><b>const</b> clips = useHistory()
+  .filter(c =&gt; !c.secret)
+  .slice(0, <em>100</em>)</pre></span></span>
           </div>
-          <div class="clip" style="--ar: 1 / 1; --tilt: -0.5deg">
-            <span class="clip-body"><img src="clip-impact-report.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 1.3deg">
+            <span class="clip-body"><span class="clip-swatch" style="--sw: #19485f; --sw-ink: #ffffff"><b>#19485F</b></span></span>
           </div>
-          <div class="clip" style="--ar: 4 / 5; --tilt: 0.6deg">
-            <span class="clip-body"><img src="clip-snippet-ocean.webp" width="560" height="678" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -1.1deg">
+            <span class="clip-body"><span class="clip-swatch" style="--sw: #d9e0a4; --sw-ink: #0d0d0d"><b>#D9E0A4</b></span></span>
           </div>
-          <div class="clip" style="--ar: 4 / 5; --tilt: -0.8deg">
-            <span class="clip-body"><img src="clip-design-files.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 1.1deg">
+            <span class="clip-body"><img src="clip-profile-card.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 1 / 1; --tilt: -0.5deg">
-            <span class="clip-body"><img src="clip-impact-report.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.8deg">
+            <span class="clip-body"><span class="clip-code"><u><i></i><i></i><i></i></u><pre><b>const</b> clips = useHistory()
+  .filter(c =&gt; !c.secret)
+  .slice(0, <em>100</em>)</pre></span></span>
           </div>
-          <div class="clip" style="--ar: 4 / 5; --tilt: 0.6deg">
-            <span class="clip-body"><img src="clip-snippet-ocean.webp" width="560" height="678" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 1.3deg">
+            <span class="clip-body"><span class="clip-swatch" style="--sw: #19485f; --sw-ink: #ffffff"><b>#19485F</b></span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -1.1deg">
+            <span class="clip-body"><span class="clip-swatch" style="--sw: #d9e0a4; --sw-ink: #0d0d0d"><b>#D9E0A4</b></span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 1.1deg">
+            <span class="clip-body"><img src="clip-profile-card.webp" width="560" height="560" alt="" loading="lazy" decoding="async"></span>
           </div>
         </div>
         <div class="cf-col" style="--dur: 108s">
           <div class="clip" style="--ar: 4 / 5; --tilt: 1.1deg">
             <span class="clip-body"><img src="clip-palette-ocean.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 4 / 5; --tilt: 1.3deg">
+          <div class="clip" style="--ar: 4 / 5; --tilt: 0.7deg">
             <span class="clip-body"><img src="clip-market-tiles.webp" width="560" height="696" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 3 / 4; --tilt: -0.6deg">
-            <span class="clip-body"><img src="clip-product-card.webp" width="560" height="744" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.5deg">
+            <span class="clip-body"><img src="clip-copy-paste.webp" width="560" height="558" alt="" loading="lazy" decoding="async"></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -0.9deg">
+            <span class="clip-body"><span class="clip-swatch" style="--sw: #6dbf8c; --sw-ink: #0d0d0d"><b>#6DBF8C</b></span></span>
           </div>
           <div class="clip" style="--ar: 4 / 5; --tilt: 1.1deg">
             <span class="clip-body"><img src="clip-palette-ocean.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 4 / 5; --tilt: 1.3deg">
+          <div class="clip" style="--ar: 4 / 5; --tilt: 0.7deg">
             <span class="clip-body"><img src="clip-market-tiles.webp" width="560" height="696" alt="" loading="lazy" decoding="async"></span>
           </div>
-          <div class="clip" style="--ar: 3 / 4; --tilt: -0.6deg">
-            <span class="clip-body"><img src="clip-product-card.webp" width="560" height="744" alt="" loading="lazy" decoding="async"></span>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.5deg">
+            <span class="clip-body"><img src="clip-copy-paste.webp" width="560" height="558" alt="" loading="lazy" decoding="async"></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -0.9deg">
+            <span class="clip-body"><span class="clip-swatch" style="--sw: #6dbf8c; --sw-ink: #0d0d0d"><b>#6DBF8C</b></span></span>
           </div>
         </div>
     </div>
