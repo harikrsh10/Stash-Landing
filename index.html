@@ -163,8 +163,8 @@
     pointer-events: auto;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px 6px 6px 14px;
+    gap: 12px;
+    padding: 8px 8px 8px 22px;
     border: 1px solid var(--line);
     border-radius: var(--r-pill);
     background: rgba(10, 10, 10, 0.72);
@@ -179,18 +179,18 @@
     align-items: center;
     gap: 9px;
     font-family: var(--mono);
-    font-size: var(--fs-sm);
+    font-size: 14px;
     font-weight: 500;
-    padding-inline-end: 10px;
+    padding-inline-end: 6px;
     flex-shrink: 0;
   }
-  .nav-brand .mark { width: 22px; height: 22px; border-radius: 6px; display: block; }
-  .nav-links { display: flex; align-items: center; gap: 2px; }
+  .nav-brand .mark { width: 24px; height: 24px; border-radius: 7px; display: block; }
+  .nav-links { display: flex; align-items: center; gap: 6px; }
   .nav-links a {
     font-family: var(--sans);
     font-size: 14px;
     color: var(--muted);
-    padding: 8px 12px;
+    padding: 10px 16px;
     border-radius: var(--r-pill);
     white-space: nowrap;
     transition: color 0.15s var(--ease), background 0.15s var(--ease);
@@ -202,8 +202,8 @@
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 9px 17px;
+    gap: 8px;
+    padding: 11px 22px;
     border-radius: var(--r-pill);
     background: #fff;
     color: #000 !important;
@@ -211,16 +211,21 @@
     font-size: 14px;
     font-weight: 500;
     white-space: nowrap;
+    margin-inline-start: 4px;
     transition: background 0.15s var(--ease), scale 0.12s var(--ease);
   }
   @media (hover: hover) { .nav-cta:hover { background: #e6e6e6; } }
   .nav-cta:active { scale: 0.96; }
-  .nav-cta svg { width: 14px; height: 14px; }
+  .nav-cta svg { width: 15px; height: 15px; }
 
-  /* The links go before the button does. At the narrow end the pill has to
+  /* Breakpoints measured off the pill itself rather than picked: it is 606px
+     wide with all four links, 449px with the two optional ones out, and 272px
+     with the brand and the button alone. The shell adds 32px of inline
+     padding, so each break sits just above the width its layout stops fitting.
+     The links go before the button does — at the narrow end the pill has to
      hold a brand and a download, and nothing else is worth the width. */
-  @media (max-width: 900px) { .nav-links a[data-optional] { display: none; } }
-  @media (max-width: 620px) { .nav-links { display: none; } }
+  @media (max-width: 660px) { .nav-links a[data-optional] { display: none; } }
+  @media (max-width: 500px) { .nav-links { display: none; } }
 
   /* =====================================================================
      Shared type
