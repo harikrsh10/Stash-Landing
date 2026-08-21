@@ -108,8 +108,8 @@
       radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,138,76,0.05), transparent 70%),
       url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.02 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
     background-size: 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 100% 100%, 200px 200px;
+    z-index: -1;
   }
-  body > *:not(.sky) { position: relative; z-index: 1; }
 
   a { color: inherit; text-decoration: none; }
   ::selection { background: var(--accent); color: #000; }
@@ -321,30 +321,49 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding-block: 140px 72px;
+    padding-block: 118px 64px;
   }
   .app-icon {
-    width: 76px;
-    height: 76px;
-    border-radius: 21px;
-    display: grid;
-    place-items: center;
-    margin-bottom: 34px;
-    background: linear-gradient(165deg, #2e2119 0%, #171310 55%, #0b0b0b 100%);
-    border: 1px solid rgba(255, 138, 76, 0.28);
+    position: relative;
+    width: clamp(148px, 16vw, 192px);
+    aspect-ratio: 1 / 1;
+    border-radius: 24%;
+    overflow: hidden;
+    margin-bottom: 24px;
+    background: #090909;
+    border: 1px solid rgba(255, 138, 76, 0.26);
     box-shadow:
-      0 1px 0 rgba(255, 200, 160, 0.18) inset,
-      0 24px 70px -16px rgba(255, 138, 76, 0.38);
+      0 1px 0 rgba(255, 200, 160, 0.16) inset,
+      0 30px 90px -20px rgba(255, 138, 76, 0.34);
   }
-  .app-icon svg { width: 44px; height: 44px; display: block; }
+  .app-icon video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    scale: 1.22;
+  }
+  /* Same control as the demo, scaled down. Motion that starts on its own and
+     runs longer than a few seconds needs a way to stop it, decorative or not,
+     and reduced motion on its own only covers the people who asked for it. */
+  .app-icon .media-toggle {
+    inset-block-end: 10px;
+    inset-inline-end: 10px;
+    width: 32px;
+    height: 32px;
+  }
+  .app-icon .media-toggle .icon-wrap,
+  .app-icon .media-toggle svg { width: 14px; height: 14px; }
 
-  .hero .lead { margin-top: 26px; }
+  .hero .lead { margin-top: 20px; }
   .hero-actions {
     display: flex;
     gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 38px;
+    margin-top: 32px;
   }
   .hero-alt {
     font-family: var(--mono);
@@ -360,6 +379,7 @@
   }
   @media (hover: hover) { .hero-alt a:hover { color: var(--text); border-bottom-color: var(--text-2); } }
 
+  .trust-strip { padding-block: 0 clamp(56px, 6vw, 84px); }
   .trust {
     list-style: none;
     display: flex;
@@ -367,7 +387,7 @@
     justify-content: center;
     gap: 10px 12px;
     padding: 0;
-    margin: 44px 0 0;
+    margin: 0;
   }
   .trust li {
     display: inline-flex;
@@ -923,7 +943,7 @@
 
 <noscript>
   <style>
-    .demo-frame { display: none; }
+    .app-icon, .demo-frame { display: none; }
     .demo-caption { margin-top: 0; }
   </style>
 </noscript>
@@ -970,17 +990,17 @@
 
   <!-- ===================== Hero ===================== -->
   <section class="hero wrap">
-    <span class="app-icon reveal" aria-hidden="true">
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <g fill="#ff8a4c">
-          <rect x="56" y="50" width="88" height="20"/>
-          <rect x="56" y="50" width="20" height="40"/>
-          <rect x="56" y="90" width="88" height="20"/>
-          <rect x="124" y="110" width="20" height="40"/>
-          <rect x="56" y="130" width="88" height="20"/>
-        </g>
-      </svg>
-    </span>
+    <div class="app-icon reveal">
+      <video id="heroClip" muted loop playsinline preload="none" disablepictureinpicture
+             aria-label="Animation: a cluster of copied screenshots, palettes and interface shots turning slowly."></video>
+      <button class="media-toggle" id="heroToggle" type="button"
+              aria-pressed="false" aria-controls="heroClip" aria-label="Pause the animation">
+        <span class="icon-wrap" aria-hidden="true">
+          <svg class="icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>
+          <svg class="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5v15l12-7.5-12-7.5Z"/></svg>
+        </span>
+      </button>
+    </div>
 
     <p class="kicker reveal" style="--d: 60ms">macOS &amp; Windows</p>
 
@@ -1012,7 +1032,10 @@
       <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">Windows</a>
     </p>
 
-    <ul class="trust reveal" style="--d: 340ms">
+  </section>
+
+  <section class="trust-strip wrap">
+    <ul class="trust reveal">
       <li>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
         Free to use
@@ -1706,55 +1729,68 @@
     });
   })();
 
-  // The demo clip is ~2MB and sits below the fold, so its source is only
-  // attached once it is on the way into view. Reduced motion holds it on the
-  // first frame, and the pause control works either way.
+  // Clips. Sources are attached only once each one is on the way into view,
+  // so neither costs the page its first paint. Reduced motion holds them on a
+  // frame, and each keeps a pause control regardless of the preference.
   (function() {
-    var demo = document.getElementById('demoClip');
-    var toggle = document.getElementById('demoToggle');
-    if (!demo) return;
-    var paused = REDUCED.matches;
+    var clips = [
+      { el: document.getElementById('heroClip'), btn: document.getElementById('heroToggle'), src: 'hero-orbit.mp4', what: 'animation' },
+      { el: document.getElementById('demoClip'), btn: document.getElementById('demoToggle'), src: 'demo.mp4', what: 'demo' }
+    ].filter(function(c) { return c.el; });
+    if (!clips.length) return;
 
-    function load() {
-      if (demo.dataset.loaded) return;
-      demo.dataset.loaded = '1';
+    function load(c) {
+      if (c.el.dataset.loaded) return;
+      c.el.dataset.loaded = '1';
       var s = document.createElement('source');
-      s.src = 'demo.mp4';
+      s.src = c.src;
       s.type = 'video/mp4';
-      demo.appendChild(s);
-      demo.preload = 'auto';
-      demo.load();
+      c.el.appendChild(s);
+      c.el.preload = 'auto';
+      c.el.load();
     }
 
-    function play() {
-      load();
-      if (paused) return;
-      var p = demo.play();
+    function play(c) {
+      load(c);
+      if (c.paused) return;
+      var p = c.el.play();
       if (p && p.catch) p.catch(function() {});
     }
 
-    function setPaused(next) {
-      paused = next;
-      if (toggle) {
-        toggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
-        toggle.setAttribute('aria-label', paused ? 'Play the demo' : 'Pause the demo');
+    function setPaused(c, next) {
+      c.paused = next;
+      if (c.btn) {
+        c.btn.setAttribute('aria-pressed', c.paused ? 'true' : 'false');
+        c.btn.setAttribute('aria-label', (c.paused ? 'Play the ' : 'Pause the ') + c.what);
       }
-      if (paused) { demo.pause(); } else { play(); }
+      if (c.paused) { c.el.pause(); } else { play(c); }
     }
 
-    if (paused) load();
-    setPaused(paused);
-    if (toggle) toggle.addEventListener('click', function() { setPaused(!paused); });
+    clips.forEach(function(c) {
+      setPaused(c, REDUCED.matches);
+      // Something has to be on screen under reduced motion, so the clip is
+      // still fetched and left showing its first frame rather than a black box.
+      if (c.paused) load(c);
+      if (c.btn) c.btn.addEventListener('click', function() { setPaused(c, !c.paused); });
+    });
 
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function(entries) {
-        entries.forEach(function(e) { if (e.isIntersecting) { play(); } else { demo.pause(); } });
+        entries.forEach(function(e) {
+          var c = clips.filter(function(x) { return x.el === e.target; })[0];
+          if (!c) return;
+          if (e.isIntersecting) { play(c); } else { c.el.pause(); }
+        });
       }, { rootMargin: '300px' });
-      io.observe(demo);
-    } else { play(); }
+      clips.forEach(function(c) { io.observe(c.el); });
+    } else {
+      clips.forEach(play);
+    }
 
     if (REDUCED.addEventListener) {
-      REDUCED.addEventListener('change', function() { setPaused(REDUCED.matches); });
+      REDUCED.addEventListener('change', function() {
+        clips.forEach(function(c) { setPaused(c, REDUCED.matches); });
+      });
     }
   })();
 
