@@ -773,8 +773,6 @@
   .rotate-toggle[aria-pressed="true"] .icon-pause { opacity: 0; scale: 0.25; filter: blur(4px); }
   .rotate-toggle[aria-pressed="true"] .icon-play  { opacity: 1; scale: 1; filter: blur(0); }
 
-  .persona-panel.is-hidden { display: none; }
-
   /* =====================================================================
      Meet
      ===================================================================== */
@@ -1309,23 +1307,11 @@
     <div class="section-head reveal">
       <p class="kicker">The problem</p>
       <h2 class="title">Sound <span class="ital">familiar?</span></h2>
-      <p class="lead">Pick the work you do. The friction is different for each, and so is the part of Stash that removes it.</p>
-    </div>
-
-    <div class="tab-row reveal">
-      <div class="tabs" role="tablist" aria-label="Choose the work you do" id="personaTabs">
-        <button class="tab" id="ptab-creative" type="button" role="tab" data-persona="creative"
-                aria-selected="true" aria-controls="ppanel-creative" tabindex="0">Creative professionals</button>
-        <button class="tab" id="ptab-engineer" type="button" role="tab" data-persona="engineer"
-                aria-selected="false" aria-controls="ppanel-engineer" tabindex="-1">Design engineers</button>
-        <button class="tab" id="ptab-developer" type="button" role="tab" data-persona="developer"
-                aria-selected="false" aria-controls="ppanel-developer" tabindex="-1">Developers</button>
-      </div>
+      <p class="lead">Three things that happen every day, and the part of Stash that removes each one.</p>
     </div>
 
     <div class="reveal" id="personaPanels">
-    <div class="persona-panel" id="ppanel-creative" role="tabpanel"
-         aria-labelledby="ptab-creative" data-persona="creative" tabindex="0">
+    <div class="persona-panel" id="ppanel-creative" data-persona="creative">
       <div class="switcher">
         <div class="visual-slot switcher-visual" aria-hidden="true">
           <figure id="fig-creative-0" class="is-shown">
@@ -1341,7 +1327,7 @@
         </div>
         <div class="switcher-list">
           <div class="pain-item is-active" data-index="0">
-            <button class="pain-head" type="button" aria-expanded="true" aria-controls="brief-creative-0">Six screenshots into Figma is six separate drags.</button>
+            <button class="pain-head" type="button" aria-expanded="true" aria-controls="brief-creative-0">Six screenshots into your design or AI tool is six separate trips back and forth.</button>
             <p class="pain-brief" id="brief-creative-0">Ctrl-click to gather them into a stack, then drag the whole deck in at once. Images land as their real files, so the target sees a normal multi-file drop.</p>
             <span class="pain-track" aria-hidden="true"><i></i></span>
           </div>
@@ -1368,97 +1354,6 @@
       </div>
     </div>
 
-    <div class="persona-panel is-hidden" id="ppanel-engineer" role="tabpanel"
-         aria-labelledby="ptab-engineer" data-persona="engineer" tabindex="0">
-      <div class="switcher">
-        <div class="visual-slot switcher-visual" aria-hidden="true">
-          <figure id="fig-engineer-0" class="is-placeholder is-shown">
-            <span class="visual-chip">Visual placeholder</span>
-            <figcaption>Text blocks outlined on a spec screenshot, selected pieces assembling below.</figcaption>
-          </figure>
-          <figure id="fig-engineer-1" class="is-placeholder">
-            <span class="visual-chip">Visual placeholder</span>
-            <figcaption>The session picker open on a clip, showing which sessions already hold it.</figcaption>
-          </figure>
-          <figure id="fig-engineer-2" class="is-placeholder">
-            <span class="visual-chip">Visual placeholder</span>
-            <figcaption>The prompts section with tags, filtered down to one tag.</figcaption>
-          </figure>
-        </div>
-        <div class="switcher-list">
-          <div class="pain-item is-active" data-index="0">
-            <button class="pain-head" type="button" aria-expanded="true" aria-controls="brief-engineer-0">The spacing value only exists in a screenshot of the spec.</button>
-            <p class="pain-brief" id="brief-engineer-0">Press text on the image and every block it finds is outlined. Click the ones you want and they assemble underneath in reading order, ready to copy.</p>
-            <span class="pain-track" aria-hidden="true"><i></i></span>
-          </div>
-          <div class="pain-item" data-index="1">
-            <button class="pain-head" type="button" aria-expanded="false" aria-controls="brief-engineer-1">Moodboard clips and code snippets end up in one pile.</button>
-            <p class="pain-brief" id="brief-engineer-1">Name a session per project and the pile sorts itself as you work. No filing afterwards — you copy exactly the way you already do.</p>
-            <span class="pain-track" aria-hidden="true"><i></i></span>
-          </div>
-          <div class="pain-item" data-index="2">
-            <button class="pain-head" type="button" aria-expanded="false" aria-controls="brief-engineer-2">The same six prompts, retyped every day.</button>
-            <p class="pain-brief" id="brief-engineer-2">Mark a clip once and it is permanent — tagged, searchable, and never pushed out by the next hundred things you copy.</p>
-            <span class="pain-track" aria-hidden="true"><i></i></span>
-          </div>
-          <div class="switcher-foot">
-            <button class="rotate-toggle" type="button" aria-pressed="false" aria-label="Pause the rotation">
-              <span class="icon-wrap" aria-hidden="true">
-                <svg class="icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>
-                <svg class="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5v15l12-7.5-12-7.5Z"/></svg>
-              </span>
-              <span class="rotate-label">Pause</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="persona-panel is-hidden" id="ppanel-developer" role="tabpanel"
-         aria-labelledby="ptab-developer" data-persona="developer" tabindex="0">
-      <div class="switcher">
-        <div class="visual-slot switcher-visual" aria-hidden="true">
-          <figure id="fig-developer-0" class="is-placeholder is-shown">
-            <span class="visual-chip">Visual placeholder</span>
-            <figcaption>A key being copied and quietly skipped, the footer dot pulsing to confirm.</figcaption>
-          </figure>
-          <figure id="fig-developer-1" class="is-placeholder">
-            <span class="visual-chip">Visual placeholder</span>
-            <figcaption>A screenshot of a stack trace with its lines outlined and selectable.</figcaption>
-          </figure>
-          <figure id="fig-developer-2" class="is-placeholder">
-            <span class="visual-chip">Visual placeholder</span>
-            <figcaption>The drawer sliding in, a search narrowing a long history to one result.</figcaption>
-          </figure>
-        </div>
-        <div class="switcher-list">
-          <div class="pain-item is-active" data-index="0">
-            <button class="pain-head" type="button" aria-expanded="true" aria-controls="brief-developer-0">You just copied an API key onto the clipboard.</button>
-            <p class="pain-brief" id="brief-developer-0">Stash recognises keys with known prefixes, JWTs, AWS credentials, high-entropy tokens, 2FA codes and Luhn-valid card numbers, and skips them before anything is stored.</p>
-            <span class="pain-track" aria-hidden="true"><i></i></span>
-          </div>
-          <div class="pain-item" data-index="1">
-            <button class="pain-head" type="button" aria-expanded="false" aria-controls="brief-developer-1">The stack trace is in a screenshot from QA.</button>
-            <p class="pain-brief" id="brief-developer-1">Read it with the operating system's own engine — Vision on macOS, Windows OCR on Windows — and pick out just the lines you need. Nothing is sent anywhere.</p>
-            <span class="pain-track" aria-hidden="true"><i></i></span>
-          </div>
-          <div class="pain-item" data-index="2">
-            <button class="pain-head" type="button" aria-expanded="false" aria-controls="brief-developer-2">The snippet you need is a hundred copies back.</button>
-            <p class="pain-brief" id="brief-developer-2">One keystroke brings the whole history in from the edge of the screen, searchable and filterable by type. Pin the ones worth keeping.</p>
-            <span class="pain-track" aria-hidden="true"><i></i></span>
-          </div>
-          <div class="switcher-foot">
-            <button class="rotate-toggle" type="button" aria-pressed="false" aria-label="Pause the rotation">
-              <span class="icon-wrap" aria-hidden="true">
-                <svg class="icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>
-                <svg class="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5v15l12-7.5-12-7.5Z"/></svg>
-              </span>
-              <span class="rotate-label">Pause</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
     </div>
   </section>
 
@@ -2010,19 +1905,18 @@
     }
   })();
 
-  // Persona tabs and the problem switcher.
+  // The problem switcher.
   //
   // Advancing is driven off the fill bar's animationend rather than a timer,
   // so the bar and the rotation cannot drift apart and pausing one pauses
   // both. Under reduced motion the keyframes never run, so nothing advances
   // on its own — which is the behaviour that preference is asking for.
   (function() {
-    var tabsRoot = document.getElementById('personaTabs');
     var panelsRoot = document.getElementById('personaPanels');
-    if (!tabsRoot || !panelsRoot) return;
+    if (!panelsRoot) return;
 
-    var tabs = Array.prototype.slice.call(tabsRoot.querySelectorAll('[role="tab"]'));
     var panels = Array.prototype.slice.call(panelsRoot.querySelectorAll('.persona-panel'));
+    if (!panels.length) return;
 
     function setup(panel) {
       var items = Array.prototype.slice.call(panel.querySelectorAll('.pain-item'));
@@ -2098,37 +1992,6 @@
     } else {
       states.forEach(function(st) { st.visible = true; });
     }
-
-    function activate(key, moveFocus) {
-      tabs.forEach(function(t) {
-        var on = t.dataset.persona === key;
-        t.setAttribute('aria-selected', on ? 'true' : 'false');
-        t.tabIndex = on ? 0 : -1;
-        if (on && moveFocus) t.focus();
-      });
-      panels.forEach(function(pn) {
-        var on = pn.dataset.persona === key;
-        pn.classList.toggle('is-hidden', !on);
-        if (pn._switcher) {
-          pn._switcher.visible = on;
-          if (on && !pn._switcher.paused) pn._switcher.show(0);
-        }
-      });
-    }
-
-    tabs.forEach(function(t, i) {
-      t.addEventListener('click', function() { activate(t.dataset.persona, false); });
-      t.addEventListener('keydown', function(e) {
-        var next = null;
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = tabs[(i + 1) % tabs.length];
-        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = tabs[(i - 1 + tabs.length) % tabs.length];
-        else if (e.key === 'Home') next = tabs[0];
-        else if (e.key === 'End') next = tabs[tabs.length - 1];
-        if (!next) return;
-        e.preventDefault();
-        activate(next.dataset.persona, true);
-      });
-    });
 
     if (REDUCED.addEventListener) {
       REDUCED.addEventListener('change', function() {
