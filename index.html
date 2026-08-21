@@ -317,64 +317,180 @@
   }
 
   /* =====================================================================
-     Hero
+     Hero — the clip field
+     ---------------------------------------------------------------------
+     A full-bleed field of the things a clipboard actually holds: images,
+     colours, text, code and links, each labelled the way a clip is labelled.
+     Five columns drift vertically at different speeds and directions; each
+     column duplicates its own contents once and the track travels exactly
+     -50%, so the loop closes on itself with no jump.
+
+     Only transforms animate, so the field composites off the main thread. It
+     is decorative and aria-hidden — the headline beside it carries the
+     meaning — but it is still motion that starts on its own and runs
+     indefinitely, so it gets a control to stop it and stops by default under
+     reduced motion.
      ===================================================================== */
   .hero {
+    position: relative;
     min-height: 100svh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding-block: 118px 64px;
+    justify-content: flex-end;
   }
-  .app-icon {
-    position: relative;
-    width: clamp(148px, 16vw, 192px);
-    aspect-ratio: 1 / 1;
-    border-radius: 24%;
+
+  .clipfield {
+    position: absolute;
+    inset: -4% -2%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 22px;
+    pointer-events: none;
+  }
+  @media (max-width: 1100px) { .clipfield { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 760px)  { .clipfield { grid-template-columns: repeat(3, 1fr); inset: -6% -10%; } }
+  @media (max-width: 480px)  { .clipfield { grid-template-columns: repeat(2, 1fr); } }
+
+  .cf-col { display: grid; gap: 22px; align-content: start; }
+  @media (prefers-reduced-motion: no-preference) {
+    .cf-col { animation: cf-drift var(--dur, 90s) linear infinite; }
+    .cf-col:nth-child(even) { animation-direction: reverse; }
+    .hero.is-still .cf-col { animation-play-state: paused; }
+  }
+  /* The duplicate set is one gap further down than half the track, so a flat
+     -50% lands 11px short and the loop visibly jumps. */
+  @keyframes cf-drift { from { translate: 0 0; } to { translate: 0 calc(-50% - 11px); } }
+
+  /* Each card sits a little off-square so the field reads as scattered
+     rather than as a table that happens to be moving. */
+  .clip { display: grid; gap: 9px; rotate: var(--tilt, 0deg); }
+  .clip-body {
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--surface);
     overflow: hidden;
-    margin-bottom: 24px;
-    background: #090909;
-    border: 1px solid rgba(255, 138, 76, 0.26);
-    box-shadow:
-      0 1px 0 rgba(255, 200, 160, 0.16) inset,
-      0 30px 90px -20px rgba(255, 138, 76, 0.34);
+    aspect-ratio: var(--ar, 4 / 5);
   }
-  .app-icon video {
+  .clip-label { padding-inline: 2px; }
+  .clip-name {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.72);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .clip-kind {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.32);
+    letter-spacing: 0.06em;
+  }
+
+  /* Swatches and thumbnails carry real values, so their colour is content
+     rather than interface. It is the one place on this page an arbitrary hue
+     is meaningful, and it never leaks into a token. */
+  .clip-body.is-swatch { position: relative; }
+  .clip-swatch { width: 100%; height: 100%; }
+  .clip-hex {
+    position: absolute;
+    inset-block-end: 8px;
+    inset-inline-start: 9px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .clip-lines { padding: 13px 14px; display: grid; gap: 7px; align-content: start; height: 100%; }
+  .clip-lines i { display: block; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.13); }
+  .clip-lines i:nth-child(3n) { width: 62%; }
+  .clip-lines i:nth-child(4n) { width: 84%; }
+
+  .clip-code {
+    padding: 13px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.42);
+    height: 100%;
+    overflow: hidden;
+    white-space: pre;
+  }
+  .clip-code b { color: var(--accent); font-weight: 400; }
+  .clip-code em { color: var(--safe); font-style: normal; }
+
+  .clip-link { padding: 13px 14px; display: grid; gap: 8px; align-content: start; height: 100%; }
+  .clip-link span {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+  }
+  .clip-link p {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.46);
+    overflow-wrap: anywhere;
+  }
+
+  /* A scrim rather than a flat panel: the field stays visible behind the copy,
+     but everything under the text is pushed to near-black so the contrast is a
+     measured number rather than a hope. */
+  .hero-scrim {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    scale: 1.22;
+    pointer-events: none;
+    background:
+      linear-gradient(to top, #000 0%, rgba(0,0,0,0.96) 34%, rgba(0,0,0,0.78) 50%, rgba(0,0,0,0.26) 68%, transparent 86%),
+      linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 34%, transparent 60%);
   }
-  /* Same control as the demo, scaled down. Motion that starts on its own and
-     runs longer than a few seconds needs a way to stop it, decorative or not,
-     and reduced motion on its own only covers the people who asked for it. */
-  .app-icon .media-toggle {
-    inset-block-end: 10px;
-    inset-inline-end: 10px;
-    width: 32px;
-    height: 32px;
-  }
-  .app-icon .media-toggle .icon-wrap,
-  .app-icon .media-toggle svg { width: 14px; height: 14px; }
 
-  .hero .lead { margin-top: 20px; }
-  .hero-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 32px;
+  .hero-foot {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 384px);
+    gap: 32px 56px;
+    align-items: end;
+    padding-block: 120px clamp(48px, 6vw, 76px);
   }
+  @media (max-width: 860px) {
+    .hero-foot { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 15px 7px 11px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.05);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 22px;
+  }
+  .badge svg { width: 14px; height: 14px; color: var(--accent); flex-shrink: 0; }
+
+  .hero-side p {
+    margin: 0 0 24px;
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
   .hero-alt {
     font-family: var(--mono);
     font-size: var(--fs-sm);
     color: var(--muted);
-    margin: 18px 0 0;
+    margin: 16px 0 0;
   }
   .hero-alt a {
     color: var(--text-2);
@@ -384,12 +500,43 @@
   }
   @media (hover: hover) { .hero-alt a:hover { color: var(--text); border-bottom-color: var(--text-2); } }
 
-  .trust-strip { padding-block: 0 clamp(56px, 6vw, 84px); }
+  .field-toggle {
+    position: absolute;
+    inset-block-start: 96px;
+    inset-inline-end: 24px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease), scale 0.12s var(--ease);
+  }
+  @supports (backdrop-filter: blur(6px)) {
+    .field-toggle { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  }
+  @media (hover: hover) { .field-toggle:hover { color: var(--text); border-color: var(--line-2); } }
+  .field-toggle:active { scale: 0.96; }
+  .field-toggle .icon-wrap { position: relative; width: 13px; height: 13px; }
+  .field-toggle svg {
+    position: absolute; inset: 0; width: 13px; height: 13px;
+    transition: opacity 0.2s var(--ease), scale 0.2s var(--ease), filter 0.2s var(--ease);
+  }
+  .field-toggle .icon-pause { opacity: 1; scale: 1; filter: blur(0); }
+  .field-toggle .icon-play  { opacity: 0; scale: 0.25; filter: blur(4px); }
+  .field-toggle[aria-pressed="true"] .icon-pause { opacity: 0; scale: 0.25; filter: blur(4px); }
+  .field-toggle[aria-pressed="true"] .icon-play  { opacity: 1; scale: 1; filter: blur(0); }
+
   .trust {
     list-style: none;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 10px 12px;
     padding: 0;
     margin: 0;
@@ -407,6 +554,7 @@
     color: var(--text-2);
   }
   .trust svg { width: 14px; height: 14px; color: var(--safe); flex-shrink: 0; }
+  .trust-strip { padding-block: clamp(40px, 5vw, 64px) clamp(56px, 6vw, 84px); }
 
   /* =====================================================================
      Demo
@@ -1166,7 +1314,7 @@
 
 <noscript>
   <style>
-    .app-icon, .demo-frame { display: none; }
+    .demo-frame { display: none; }
     .demo-caption { margin-top: 0; }
   </style>
 </noscript>
@@ -1211,49 +1359,244 @@
 <main id="main">
 
   <!-- ===================== Hero ===================== -->
-  <section class="hero wrap">
-    <div class="app-icon reveal">
-      <video id="heroClip" muted loop playsinline preload="none" disablepictureinpicture
-             aria-label="Animation: a cluster of copied screenshots, palettes and interface shots turning slowly."></video>
-      <button class="media-toggle" id="heroToggle" type="button"
-              aria-pressed="false" aria-controls="heroClip" aria-label="Pause the animation">
-        <span class="icon-wrap" aria-hidden="true">
-          <svg class="icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>
-          <svg class="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5v15l12-7.5-12-7.5Z"/></svg>
+  <section class="hero" id="top">
+    <div class="clipfield" aria-hidden="true">
+        <div class="cf-col" style="--dur: 96s">
+          <div class="clip" style="--ar: 4 / 5; --tilt: -1.2deg">
+            <span class="clip-body" style="background:linear-gradient(155deg,#3d2a1c,#8a4a22 45%,#c9762f)"></span>
+            <span class="clip-label"><span class="clip-name">Screenshot 2026-08-21 at 14.02</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -1deg">
+            <span class="clip-body is-swatch"><span class="clip-swatch" style="background:#6dbf8c"></span><span class="clip-hex">#6DBF8C</span></span>
+            <span class="clip-label"><span class="clip-name">#6DBF8C</span><span class="clip-kind">Colour</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 5; --tilt: 1deg">
+            <span class="clip-body" style="background:linear-gradient(135deg,#1b1b2e,#3a3a6b 55%,#8f8fd6)"></span>
+            <span class="clip-label"><span class="clip-name">IMG_4821.HEIC</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 5; --tilt: 1.2deg">
+            <span class="clip-body"><span class="clip-link"><span></span><p>developer.apple.com/</p><p>documentation/vision</p></span></span>
+            <span class="clip-label"><span class="clip-name">developer.apple.com</span><span class="clip-kind">Link</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 5; --tilt: -1.2deg">
+            <span class="clip-body" style="background:linear-gradient(155deg,#3d2a1c,#8a4a22 45%,#c9762f)"></span>
+            <span class="clip-label"><span class="clip-name">Screenshot 2026-08-21 at 14.02</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -1deg">
+            <span class="clip-body is-swatch"><span class="clip-swatch" style="background:#6dbf8c"></span><span class="clip-hex">#6DBF8C</span></span>
+            <span class="clip-label"><span class="clip-name">#6DBF8C</span><span class="clip-kind">Colour</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 5; --tilt: 1deg">
+            <span class="clip-body" style="background:linear-gradient(135deg,#1b1b2e,#3a3a6b 55%,#8f8fd6)"></span>
+            <span class="clip-label"><span class="clip-name">IMG_4821.HEIC</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 5; --tilt: 1.2deg">
+            <span class="clip-body"><span class="clip-link"><span></span><p>developer.apple.com/</p><p>documentation/vision</p></span></span>
+            <span class="clip-label"><span class="clip-name">developer.apple.com</span><span class="clip-kind">Link</span></span>
+          </div>
+        </div>
+        <div class="cf-col" style="--dur: 124s">
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.9deg">
+            <span class="clip-body is-swatch"><span class="clip-swatch" style="background:#ff8a4c"></span><span class="clip-hex">#FF8A4C</span></span>
+            <span class="clip-label"><span class="clip-name">#FF8A4C</span><span class="clip-kind">Colour</span></span>
+          </div>
+          <div class="clip" style="--ar: 3 / 4; --tilt: 0.7deg">
+            <span class="clip-body" style="background:linear-gradient(200deg,#123028,#2b5f4a 50%,#6dbf8c)"></span>
+            <span class="clip-label"><span class="clip-name">palette-export.png</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -1.1deg">
+            <span class="clip-body is-swatch"><span class="clip-swatch" style="background:#8fb4e8"></span><span class="clip-hex">#8FB4E8</span></span>
+            <span class="clip-label"><span class="clip-name">#8FB4E8</span><span class="clip-kind">Colour</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.6deg">
+            <span class="clip-body is-swatch"><span class="clip-swatch" style="background:#d4b56a"></span><span class="clip-hex">#D4B56A</span></span>
+            <span class="clip-label"><span class="clip-name">#D4B56A</span><span class="clip-kind">Colour</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.9deg">
+            <span class="clip-body is-swatch"><span class="clip-swatch" style="background:#ff8a4c"></span><span class="clip-hex">#FF8A4C</span></span>
+            <span class="clip-label"><span class="clip-name">#FF8A4C</span><span class="clip-kind">Colour</span></span>
+          </div>
+          <div class="clip" style="--ar: 3 / 4; --tilt: 0.7deg">
+            <span class="clip-body" style="background:linear-gradient(200deg,#123028,#2b5f4a 50%,#6dbf8c)"></span>
+            <span class="clip-label"><span class="clip-name">palette-export.png</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: -1.1deg">
+            <span class="clip-body is-swatch"><span class="clip-swatch" style="background:#8fb4e8"></span><span class="clip-hex">#8FB4E8</span></span>
+            <span class="clip-label"><span class="clip-name">#8FB4E8</span><span class="clip-kind">Colour</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.6deg">
+            <span class="clip-body is-swatch"><span class="clip-swatch" style="background:#d4b56a"></span><span class="clip-hex">#D4B56A</span></span>
+            <span class="clip-label"><span class="clip-name">#D4B56A</span><span class="clip-kind">Colour</span></span>
+          </div>
+        </div>
+        <div class="cf-col" style="--dur: 82s">
+          <div class="clip" style="--ar: 4 / 3; --tilt: 0.6deg">
+            <span class="clip-body"><span class="clip-code"><b>const</b> clips = useHistory()
+  .filter(c =&gt; !c.secret)
+  .slice(0, <em>100</em>)</span></span>
+            <span class="clip-label"><span class="clip-name">usePasteHistory.ts</span><span class="clip-kind">Code</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.5deg">
+            <span class="clip-body"><span class="clip-lines"><i></i><i></i><i></i><i></i></span></span>
+            <span class="clip-label"><span class="clip-name">Client brief, paragraph 2</span><span class="clip-kind">Text</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.8deg">
+            <span class="clip-body"><span class="clip-lines"><i></i><i></i><i></i><i></i><i></i></span></span>
+            <span class="clip-label"><span class="clip-name">Standup notes</span><span class="clip-kind">Text</span></span>
+          </div>
+          <div class="clip" style="--ar: 3 / 4; --tilt: -1deg">
+            <span class="clip-body"><span class="clip-lines"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+            <span class="clip-label"><span class="clip-name">Terms, clause 4.2</span><span class="clip-kind">Text</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: 0.6deg">
+            <span class="clip-body"><span class="clip-code"><b>const</b> clips = useHistory()
+  .filter(c =&gt; !c.secret)
+  .slice(0, <em>100</em>)</span></span>
+            <span class="clip-label"><span class="clip-name">usePasteHistory.ts</span><span class="clip-kind">Code</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.5deg">
+            <span class="clip-body"><span class="clip-lines"><i></i><i></i><i></i><i></i></span></span>
+            <span class="clip-label"><span class="clip-name">Client brief, paragraph 2</span><span class="clip-kind">Text</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.8deg">
+            <span class="clip-body"><span class="clip-lines"><i></i><i></i><i></i><i></i><i></i></span></span>
+            <span class="clip-label"><span class="clip-name">Standup notes</span><span class="clip-kind">Text</span></span>
+          </div>
+          <div class="clip" style="--ar: 3 / 4; --tilt: -1deg">
+            <span class="clip-body"><span class="clip-lines"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+            <span class="clip-label"><span class="clip-name">Terms, clause 4.2</span><span class="clip-kind">Text</span></span>
+          </div>
+        </div>
+        <div class="cf-col" style="--dur: 138s">
+          <div class="clip" style="--ar: 4 / 5; --tilt: -0.8deg">
+            <span class="clip-body"><span class="clip-lines"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+            <span class="clip-label"><span class="clip-name">Release notes, draft 3</span><span class="clip-kind">Text</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 1.3deg">
+            <span class="clip-body"><span class="clip-code"><b>@media</b> (hover: hover) {
+  .card:hover {
+    border-color: <em>#2f2f2f</em>;
+  }
+}</span></span>
+            <span class="clip-label"><span class="clip-name">tokens.css</span><span class="clip-kind">Code</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.6deg">
+            <span class="clip-body"><span class="clip-code">ERR_CONNECTION_REFUSED
+  at <em>fetchClips</em> (main.js:214)
+  at async poll (main.js:88)</span></span>
+            <span class="clip-label"><span class="clip-name">stack trace</span><span class="clip-kind">Code</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.9deg">
+            <span class="clip-body" style="background:linear-gradient(190deg,#20202a,#4a4a5c 60%,#a8a8bd)"></span>
+            <span class="clip-label"><span class="clip-name">spec-spacing.png</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 5; --tilt: -0.8deg">
+            <span class="clip-body"><span class="clip-lines"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+            <span class="clip-label"><span class="clip-name">Release notes, draft 3</span><span class="clip-kind">Text</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 1.3deg">
+            <span class="clip-body"><span class="clip-code"><b>@media</b> (hover: hover) {
+  .card:hover {
+    border-color: <em>#2f2f2f</em>;
+  }
+}</span></span>
+            <span class="clip-label"><span class="clip-name">tokens.css</span><span class="clip-kind">Code</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.6deg">
+            <span class="clip-body"><span class="clip-code">ERR_CONNECTION_REFUSED
+  at <em>fetchClips</em> (main.js:214)
+  at async poll (main.js:88)</span></span>
+            <span class="clip-label"><span class="clip-name">stack trace</span><span class="clip-kind">Code</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 0.9deg">
+            <span class="clip-body" style="background:linear-gradient(190deg,#20202a,#4a4a5c 60%,#a8a8bd)"></span>
+            <span class="clip-label"><span class="clip-name">spec-spacing.png</span><span class="clip-kind">Image</span></span>
+          </div>
+        </div>
+        <div class="cf-col" style="--dur: 108s">
+          <div class="clip" style="--ar: 1 / 1; --tilt: 1.1deg">
+            <span class="clip-body"><span class="clip-link"><span></span><p>figma.com/file/wY2k/</p><p>Moodboard-Q3</p></span></span>
+            <span class="clip-label"><span class="clip-name">figma.com</span><span class="clip-kind">Link</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.9deg">
+            <span class="clip-body"><span class="clip-link"><span></span><p>github.com/harikrsh10/</p><p>Stash/releases</p></span></span>
+            <span class="clip-label"><span class="clip-name">github.com</span><span class="clip-kind">Link</span></span>
+          </div>
+          <div class="clip" style="--ar: 3 / 4; --tilt: 0.5deg">
+            <span class="clip-body" style="background:linear-gradient(165deg,#2e1b1b,#7a2f2f 50%,#d46a6a)"></span>
+            <span class="clip-label"><span class="clip-name">hero-crop@2x.png</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.7deg">
+            <span class="clip-body"><span class="clip-code"><b>npm</b> run dist
+<em>&#10003;</em> built Stash-win-x64.exe</span></span>
+            <span class="clip-label"><span class="clip-name">build command</span><span class="clip-kind">Code</span></span>
+          </div>
+          <div class="clip" style="--ar: 1 / 1; --tilt: 1.1deg">
+            <span class="clip-body"><span class="clip-link"><span></span><p>figma.com/file/wY2k/</p><p>Moodboard-Q3</p></span></span>
+            <span class="clip-label"><span class="clip-name">figma.com</span><span class="clip-kind">Link</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.9deg">
+            <span class="clip-body"><span class="clip-link"><span></span><p>github.com/harikrsh10/</p><p>Stash/releases</p></span></span>
+            <span class="clip-label"><span class="clip-name">github.com</span><span class="clip-kind">Link</span></span>
+          </div>
+          <div class="clip" style="--ar: 3 / 4; --tilt: 0.5deg">
+            <span class="clip-body" style="background:linear-gradient(165deg,#2e1b1b,#7a2f2f 50%,#d46a6a)"></span>
+            <span class="clip-label"><span class="clip-name">hero-crop@2x.png</span><span class="clip-kind">Image</span></span>
+          </div>
+          <div class="clip" style="--ar: 4 / 3; --tilt: -0.7deg">
+            <span class="clip-body"><span class="clip-code"><b>npm</b> run dist
+<em>&#10003;</em> built Stash-win-x64.exe</span></span>
+            <span class="clip-label"><span class="clip-name">build command</span><span class="clip-kind">Code</span></span>
+          </div>
+        </div>
+    </div>
+    <div class="hero-scrim" aria-hidden="true"></div>
+
+    <button class="field-toggle" id="fieldToggle" type="button"
+            aria-pressed="false" aria-label="Pause the moving background">
+      <span class="icon-wrap" aria-hidden="true">
+        <svg class="icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>
+        <svg class="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5v15l12-7.5-12-7.5Z"/></svg>
+      </span>
+      <span class="field-label">Pause</span>
+    </button>
+
+    <div class="wrap hero-foot">
+      <div class="hero-copy">
+        <span class="badge reveal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
+          </svg>
+          Free for macOS &amp; Windows
         </span>
-      </button>
+        <h1 class="display reveal" style="--d: 70ms">
+          Everything you copy, <span class="ital">quietly</span> kept
+        </h1>
+      </div>
+
+      <div class="hero-side">
+        <p class="reveal" style="--d: 140ms">
+          Images, colours, text, code and links — your last 100 copies, one
+          keystroke away and draggable straight into whatever you were already
+          working in.
+        </p>
+        <div class="hero-actions reveal" style="--d: 200ms">
+          <a id="download-primary" class="btn btn-primary"
+             href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
+            </svg>
+            <span id="download-label">Download Stash</span>
+          </a>
+          <a href="#how" class="btn btn-ghost">See how it works</a>
+        </div>
+        <p class="hero-alt reveal" id="download-alt" style="--d: 250ms">
+          <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">Intel Mac</a>
+          &middot;
+          <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">Windows</a>
+        </p>
+      </div>
     </div>
-
-    <p class="kicker reveal" style="--d: 60ms">macOS &amp; Windows</p>
-
-    <h1 class="display reveal" style="--d: 110ms">
-      Everything you copy, <span class="ital">quietly</span> kept
-    </h1>
-
-    <p class="lead reveal" style="--d: 170ms">
-      Stash keeps your last 100 copies one keystroke away, holds each project's
-      clips in its own session, and pulls text and colour straight out of a
-      screenshot — no switching, no retyping, no losing the thing you copied
-      two minutes ago.
-    </p>
-
-    <div class="hero-actions reveal" style="--d: 230ms">
-      <a id="download-primary" class="btn btn-primary"
-         href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
-        </svg>
-        <span id="download-label">Download Stash</span>
-      </a>
-      <a href="#how" class="btn btn-ghost">See how it works</a>
-    </div>
-
-    <p class="hero-alt reveal" id="download-alt" style="--d: 280ms">
-      <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">Intel Mac</a>
-      &middot;
-      <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">Windows</a>
-    </p>
-
   </section>
 
   <section class="trust-strip wrap">
@@ -2043,7 +2386,6 @@
   // frame, and each keeps a pause control regardless of the preference.
   (function() {
     var clips = [
-      { el: document.getElementById('heroClip'), btn: document.getElementById('heroToggle'), src: 'hero-orbit.mp4', what: 'animation' },
       { el: document.getElementById('demoClip'), btn: document.getElementById('demoToggle'), src: 'demo.mp4', what: 'demo' }
     ].filter(function(c) { return c.el; });
     if (!clips.length) return;
@@ -2100,6 +2442,29 @@
       REDUCED.addEventListener('change', function() {
         clips.forEach(function(c) { setPaused(c, REDUCED.matches); });
       });
+    }
+  })();
+
+  // The hero's clip field. It is decorative, but it starts on its own and
+  // runs indefinitely, so it needs a way to stop it — and it starts stopped
+  // when motion is unwelcome.
+  (function() {
+    var hero = document.querySelector('.hero');
+    var btn = document.getElementById('fieldToggle');
+    if (!hero || !btn) return;
+    var label = btn.querySelector('.field-label');
+    var still = REDUCED.matches;
+
+    function apply() {
+      hero.classList.toggle('is-still', still);
+      btn.setAttribute('aria-pressed', still ? 'true' : 'false');
+      btn.setAttribute('aria-label', still ? 'Resume the moving background' : 'Pause the moving background');
+      if (label) label.textContent = still ? 'Play' : 'Pause';
+    }
+    apply();
+    btn.addEventListener('click', function() { still = !still; apply(); });
+    if (REDUCED.addEventListener) {
+      REDUCED.addEventListener('change', function() { still = REDUCED.matches; apply(); });
     }
   })();
 
