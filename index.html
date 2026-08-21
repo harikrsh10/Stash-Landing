@@ -9,18 +9,24 @@
 <meta property="og:description" content="Everything you copy, quietly kept. Drag it into any app, keep each project in its own session, pull text and colour straight out of a screenshot." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="https://stash-site.vercel.app/og-image.png" />
-   <meta property="og:image:width" content="1200" />
-   <meta property="og:image:height" content="630" />
-   <meta name="twitter:card" content="summary_large_image" />
-   <meta name="twitter:image" content="https://stash-site.vercel.app/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://stash-site.vercel.app/og-image.png" />
 <meta name="theme-color" content="#0a0a0a" />
 <link rel="icon" type="image/png" href="icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<!-- Set before first paint. Reveal animations start hidden only when scripting
+     is available to un-hide them, so a failed or blocked script leaves a
+     readable page rather than an empty one. -->
+<script>document.documentElement.classList.add('js');</script>
 
 <style>
   :root {
+    /* ---- Surfaces and text -------------------------------------------- */
     --bg: #0a0a0a;
     --surface: #111;
     --surface-2: #1a1a1a;
@@ -28,33 +34,68 @@
     --border-2: #2f2f2f;
     --text: #e8e8e8;
     --text-2: #b8b8b8;
-    --muted: #666;
-    --muted-2: #444;
+    /* Was #666 (3.45:1 on --bg), which failed AA for the nav, footer, tags and
+       trust lines it carries. #8a8a8a measures 5.73:1 on --bg and 5.04:1 on
+       --surface-2, the darkest and lightest grounds it renders on. */
+    --muted: #8a8a8a;
+
     --accent: #f8f4ec;
+    --accent-hover: #fff;
     --accent-dim: rgba(248, 244, 236, 0.06);
 
-    --tint-code: #a0a0ff;
-    --tint-url: #6dbf8c;
-    --tint-img: #d4a06a;
+    /* ---- Meaning ------------------------------------------------------
+       Green is the page's one "safe / verified / done" colour: the status dot,
+       the security section, the notarised badge, the download tick. It marks
+       nothing else, so it never asks to be read two ways. */
+    --safe: #6dbf8c;
+    --safe-dim: rgba(109, 191, 140, 0.22);
+
+    /* Category hues for the feature grid. Each marks one capability and is not
+       reused elsewhere, so the colour is a label rather than a status. */
+    --tint-drag: #a0a0ff;
     --tint-stack: #d4b56a;
     --tint-prompt: #b09aeb;
-    --tint-speed: #e08a7a;
-    --tint-color: #6ad4c4;
+    --tint-extract: #d4a06a;
+    --tint-palette: #6ad4c4;
     --tint-session: #8fb4e8;
+    --tint-speed: #e08a7a;
 
+    /* ---- Type ---------------------------------------------------------- */
     --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    --fs-display: clamp(36px, 4.4vw, 50px);
+    --fs-h2: clamp(26px, 3.2vw, 36px);
+    --fs-h3: 19px;
+    --fs-h4: 16px;
+    --fs-lead: 18px;
+    --fs-body: 15px;
+    --fs-sm: 13px;
+    --fs-label: 12px;
+
+    /* ---- Rhythm and shape ---------------------------------------------- */
+    --section-y: clamp(72px, 8vw, 104px);
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --radius-sm: 6px;
+
+    --ease: cubic-bezier(0.2, 0, 0, 1);
+
+    /* Rings sit clear of the control on the page ground, so one colour works on
+       the cream primary button and on every dark surface alike. */
+    --focus: var(--accent);
   }
 
   *, *::before, *::after { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
   body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
     font-family: var(--sans);
-    font-size: 16px;
+    font-size: var(--fs-body);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -66,31 +107,94 @@
   a { color: inherit; text-decoration: none; }
   ::selection { background: var(--accent); color: var(--bg); }
 
-  .container {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 0 32px;
+  .prose-link {
+    color: var(--text-2);
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-position: from-font;
+    text-underline-offset: 2px;
+    text-decoration-skip-ink: auto;
+    text-decoration-color: var(--border-2);
+    transition: color 0.15s var(--ease), text-decoration-color 0.15s var(--ease);
   }
-  @media (max-width: 640px) {
-    .container { padding: 0 20px; }
+  @media (hover: hover) {
+    .prose-link:hover { color: var(--text); text-decoration-color: var(--text-2); }
   }
 
-  /* Nav */
+  /* One ring for the whole page. The offset puts it on the page ground rather
+     than on the control, so it stays visible even on the cream button. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+  @media (forced-colors: active) {
+    :focus-visible { outline-color: Highlight; }
+  }
+
+  .skip-link {
+    position: absolute;
+    inset-block-start: 16px;
+    inset-inline-start: 16px;
+    z-index: 100;
+    padding: 12px 18px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: var(--fs-sm);
+    border-radius: var(--radius-md);
+    translate: 0 -300%;
+    transition: translate 0.15s var(--ease);
+  }
+  .skip-link:focus { translate: 0 0; }
+
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-inline: 32px;
+  }
+  @media (max-width: 640px) { .container { padding-inline: 20px; } }
+
+  /* =====================================================================
+     Nav
+     ===================================================================== */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(10, 10, 10, 0.72);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  }
+  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+    .site-header {
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      backdrop-filter: blur(14px) saturate(140%);
+    }
+  }
+  /* Only once the page has moved: a border under a nav sitting on its own hero
+     is a line with nothing above it to separate. */
+  .site-header.is-scrolled {
+    border-bottom-color: var(--border);
+    background: rgba(10, 10, 10, 0.86);
+  }
   .nav {
-    padding: 28px 0;
+    padding-block: 18px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px 20px;
   }
   .brand {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 12px;
     font-family: var(--mono);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.02em;
+    padding-block: 6px;
   }
   .brand-mark {
     width: 28px;
@@ -101,47 +205,86 @@
     place-items: center;
     flex-shrink: 0;
   }
-  .brand-mark svg {
-    width: 18px;
-    height: 18px;
-    display: block;
-  }
+  .brand-mark svg { width: 18px; height: 18px; display: block; }
+
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 8px;
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     color: var(--muted);
   }
-  .nav-links a { transition: color 0.15s; }
-  .nav-links a:hover { color: var(--text); }
+  /* Padding rather than bare text, so each link clears the 24×24 minimum
+     target on its own instead of relying on the gap between them. */
+  .nav-links > a {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s var(--ease), background 0.15s var(--ease);
+  }
+  @media (hover: hover) {
+    .nav-links > a:hover { color: var(--text); background: var(--accent-dim); }
+  }
+  /* Section links drop out before the download button does. At 320px the full
+     set pushed the button clean off the right edge, taking the page's main
+     conversion control with it; every section it names is still reachable by
+     scrolling and from the buttons in the page itself. */
+  @media (max-width: 620px) {
+    .nav-links .nav-link-optional { display: none; }
+  }
+  @media (max-width: 470px) {
+    .nav-links > a:not(.nav-cta) { display: none; }
+    .nav-cta { margin-inline-start: 0; padding-inline: 14px; }
+  }
+
   .nav-cta {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
-    border: 1px solid transparent;
-    border-radius: 6px;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
     background: var(--accent);
     color: var(--bg) !important;
     font-weight: 500;
-    transition: background 0.15s, transform 0.12s ease;
+    margin-inline-start: 8px;
+    transition: background 0.15s var(--ease), scale 0.12s var(--ease);
   }
-  .nav-cta:hover { background: #fff; }
-  .nav-cta:active { transform: translateY(1px); }
-  .nav-cta svg { width: 14px; height: 14px; }
+  @media (hover: hover) { .nav-cta:hover { background: var(--accent-hover); } }
+  .nav-cta:active { scale: 0.96; }
+  .nav-cta svg { width: 15px; height: 15px; }
 
-  /* Hero */
+  /* =====================================================================
+     Hero
+     ===================================================================== */
   .hero {
-    padding: 88px 0 56px;
-    text-align: left;
+    padding-block: clamp(56px, 7vw, 88px) clamp(48px, 6vw, 72px);
+    display: grid;
+    /* The copy leads, but the visual stays wide enough that squaring it off
+       against the copy height never crops into the artwork. */
+    grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+    gap: clamp(40px, 5vw, 56px) clamp(40px, 5vw, 64px);
+    align-items: stretch;
   }
-  @media (max-width: 640px) { .hero { padding: 56px 0 40px; } }
+  /* Collapse when the h1 starts losing more than the visual would: measured at
+     the point the headline drops to four lines, not at a device width. */
+  @media (max-width: 940px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 44px;
+    }
+    /* Stacked, the clip is square and nothing is cropped, so the horizontal
+       fade goes back to the artwork's full export margin. */
+    .hero-visual { max-width: 420px; aspect-ratio: 1 / 1; }
+    .hero-visual::after {
+      background:
+        linear-gradient(to right,  var(--bg), transparent 11%, transparent 89%, var(--bg)),
+        linear-gradient(to bottom, var(--bg), transparent 11%, transparent 89%, var(--bg));
+    }
+  }
 
   .eyebrow {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: var(--fs-label);
     color: var(--muted);
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -154,36 +297,38 @@
     content: "";
     width: 6px; height: 6px;
     border-radius: 50%;
-    background: var(--tint-url);
-    box-shadow: 0 0 8px rgba(109, 191, 140, 0.4);
+    background: var(--safe);
+    box-shadow: 0 0 8px var(--safe-dim);
+    flex-shrink: 0;
   }
 
   h1 {
     font-family: var(--sans);
     font-weight: 600;
-    font-size: clamp(38px, 6vw, 64px);
+    font-size: var(--fs-display);
     line-height: 1.05;
     letter-spacing: -0.025em;
     margin: 0 0 24px;
-    max-width: 18ch;
+    max-width: 20ch;
+    text-wrap: balance;
   }
   h1 .accent {
     font-family: var(--mono);
     font-weight: 500;
-    font-style: normal;
     color: var(--text-2);
-    font-size: 0.88em;
+    font-size: 0.86em;
   }
 
   .subhead {
-    font-size: clamp(17px, 2vw, 19px);
-    line-height: 1.5;
+    font-size: var(--fs-lead);
+    line-height: 1.55;
     color: var(--text-2);
-    max-width: 56ch;
-    margin: 0 0 40px;
+    max-width: 46ch;
+    margin: 0 0 32px;
+    text-wrap: pretty;
   }
 
-  /* CTA */
+  /* ---- Buttons -------------------------------------------------------- */
   .cta-row {
     display: flex;
     align-items: center;
@@ -199,59 +344,127 @@
     font-family: var(--mono);
     font-size: 14px;
     font-weight: 500;
-    cursor: pointer;
-    transition: transform 0.12s ease, background 0.15s, border-color 0.15s;
-    text-decoration: none;
     border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s var(--ease), border-color 0.15s var(--ease), scale 0.12s var(--ease);
   }
-  .btn:active { transform: translateY(1px); }
+  .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
   .btn-primary {
     background: var(--accent);
     color: var(--bg);
   }
-  .btn-primary:hover { background: #fff; }
-  .btn-primary svg { width: 16px; height: 16px; }
+  @media (hover: hover) { .btn-primary:hover { background: var(--accent-hover); } }
+  .btn:active { scale: 0.96; }
 
   .other-downloads {
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     color: var(--muted);
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 6px;
     flex-wrap: wrap;
   }
   .other-downloads a {
     color: var(--text-2);
-    border-bottom: 1px dotted var(--border-2);
-    padding-bottom: 1px;
-    transition: color 0.15s, border-color 0.15s;
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--border-2);
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
   }
-  .other-downloads a:hover { color: var(--text); border-bottom-color: var(--text-2); }
+  @media (hover: hover) {
+    .other-downloads a:hover { color: var(--text); border-bottom-color: var(--text-2); }
+  }
 
-  /* Demo video */
-  .demo {
-    margin-top: 72px;
-    padding-bottom: 80px;
+  /* ---- Hero trust row -------------------------------------------------
+     Three facts a first-time visitor weighs before downloading an unknown
+     desktop app, each with a mark beside it so the reassurance is not carried
+     by the green alone. */
+  .hero-trust {
+    grid-column: 1 / -1;
+    list-style: none;
+    padding: 22px 0 0;
+    margin: 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 40px;
+    font-family: var(--mono);
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
+  .hero-trust li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .hero-trust svg {
+    width: 15px; height: 15px;
+    color: var(--safe);
+    flex-shrink: 0;
+  }
+  .hero-trust b { color: var(--text-2); font-weight: 500; }
+
+  /* ---- Hero visual ----------------------------------------------------
+     No border and no card. Measured off a rendered frame, the browser paints
+     the clip's ground at #090909 against a page ground of #0a0a0a — near
+     enough to identical that the only thing ever making a rectangle appear
+     there was the border and surface a card would add.
+
+     What is left is the page's own radial lightening, which reaches #0d0d0d
+     at the top left and leaves a four-level seam down the clip's edge. The
+     gradient below covers it. Its stops are the artwork's own export margin,
+     measured across the loop: ~11.7% of the source square on every side, of
+     which the crop to the copy's height eats about 6% horizontally. */
+  .hero-visual {
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+    align-self: stretch;
+  }
+  .hero-visual video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hero-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to right,  var(--bg), transparent 6%, transparent 94%, var(--bg)),
+      linear-gradient(to bottom, var(--bg), transparent 11%, transparent 89%, var(--bg));
+  }
+
+  /* =====================================================================
+     Demo
+     ===================================================================== */
+  .demo { padding-bottom: clamp(48px, 5vw, 72px); }
+  .demo-figure { margin: 0; }
   .demo-frame {
     position: relative;
-    border: 1px solid var(--border-2);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--surface);
+    /* Media gets a white-alpha hairline, never a near-black one — a dark
+       border picks up the surface behind it and reads as a dirty edge. */
+    outline: 1px solid rgba(255, 255, 255, 0.1);
+    outline-offset: -1px;
     box-shadow:
       0 1px 0 rgba(255,255,255,0.04) inset,
       0 30px 80px -30px rgba(0,0,0,0.8),
       0 12px 40px -12px rgba(0,0,0,0.6);
   }
   .demo-chrome {
-    height: 36px;
+    height: 38px;
     background: var(--surface-2);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    padding: 0 14px;
+    padding-inline: 14px;
     gap: 8px;
   }
   .demo-chrome .dot {
@@ -260,249 +473,211 @@
     background: var(--border-2);
   }
   .demo-chrome .label {
-    margin-left: auto;
+    margin-inline-start: auto;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: var(--fs-label);
     color: var(--muted);
     letter-spacing: 0.05em;
   }
   .demo-content {
-    aspect-ratio: 16 / 10;
+    /* Matches the source (3840×2160). The old 16/10 frame cropped a tenth of
+       the recording away at the top and bottom. */
+    aspect-ratio: 16 / 9;
     background: var(--bg);
-    display: grid;
-    place-items: center;
     position: relative;
     overflow: hidden;
   }
-  .demo-content video,
-  .demo-content img {
+  .demo-content video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
-  .demo-placeholder {
-    text-align: center;
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 40px;
-  }
-  .demo-placeholder .play {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 1px solid var(--border-2);
-    margin: 0 auto 16px;
+
+  /* Autoplaying media needs a way to stop it, whatever the motion preference. */
+  .media-toggle {
+    position: absolute;
+    inset-block-end: 14px;
+    inset-inline-end: 14px;
+    width: 40px;
+    height: 40px;
     display: grid;
     place-items: center;
-    color: var(--text-2);
-  }
-
-  /* Features */
-  .features {
-    border-top: 1px solid var(--border);
-    padding: 80px 0;
-  }
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  /* Eight cards across three columns leaves the last row one short, and this
-     grid draws its hairlines with a background colour — so an empty cell shows
-     up as a lit block rather than as nothing. The last card takes the slack. */
-  #features .feature:last-child { grid-column: span 2; }
-
-  @media (max-width: 720px) {
-    .features-grid { grid-template-columns: 1fr; }
-    #features .feature:last-child { grid-column: auto; }
-  }
-  .feature {
-    background: var(--bg);
-    padding: 36px 32px;
-  }
-  .feature-tag {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: 0 0 16px;
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 4px;
     border: 1px solid var(--border-2);
-    color: var(--muted);
-  }
-  .feature[data-tint="code"]   .feature-tag { color: var(--tint-code);   border-color: rgba(160,160,255,0.25); }
-  .feature[data-tint="url"]    .feature-tag { color: var(--tint-url);    border-color: rgba(109,191,140,0.25); }
-  .feature[data-tint="img"]    .feature-tag { color: var(--tint-img);    border-color: rgba(212,160,106,0.25); }
-  .feature[data-tint="stack"]  .feature-tag { color: var(--tint-stack);  border-color: rgba(212,181,106,0.25); }
-  .feature[data-tint="prompt"] .feature-tag { color: var(--tint-prompt); border-color: rgba(176,154,235,0.25); }
-  .feature[data-tint="speed"]  .feature-tag { color: var(--tint-speed);  border-color: rgba(224,138,122,0.25); }
-  .feature[data-tint="color"]   .feature-tag { color: var(--tint-color);   border-color: rgba(106,212,196,0.25); }
-  .feature[data-tint="session"] .feature-tag { color: var(--tint-session); border-color: rgba(143,180,232,0.25); }
-
-  .feature h3 {
-    font-family: var(--sans);
-    font-size: 19px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    margin: 0 0 10px;
+    border-radius: 50%;
+    background: rgba(10, 10, 10, 0.72);
     color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s var(--ease), border-color 0.15s var(--ease), scale 0.12s var(--ease);
   }
-  .feature p {
-    font-size: 14.5px;
-    line-height: 1.55;
-    color: var(--text-2);
-    margin: 0;
+  @supports (backdrop-filter: blur(6px)) {
+    .media-toggle { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  }
+  @media (hover: hover) {
+    .media-toggle:hover { background: rgba(10, 10, 10, 0.9); border-color: var(--text-2); }
+  }
+  .media-toggle:active { scale: 0.96; }
+  /* Both icons stay in the DOM and cross-fade, so the swap has an exit as well
+     as an enter and never flashes an empty button. */
+  .media-toggle .icon-wrap { position: relative; width: 16px; height: 16px; }
+  .media-toggle svg {
+    position: absolute;
+    inset: 0;
+    width: 16px; height: 16px;
+    transition: opacity 0.2s var(--ease), scale 0.2s var(--ease), filter 0.2s var(--ease);
+  }
+  .media-toggle .icon-pause { opacity: 1; scale: 1; filter: blur(0); }
+  .media-toggle .icon-play  { opacity: 0; scale: 0.25; filter: blur(4px); }
+  .media-toggle[aria-pressed="true"] .icon-pause { opacity: 0; scale: 0.25; filter: blur(4px); }
+  .media-toggle[aria-pressed="true"] .icon-play  { opacity: 1; scale: 1; filter: blur(0); }
+  /* Optical centring: a play triangle's visual mass sits left of its box. */
+  .media-toggle .icon-play { transform: translateX(1px); }
+
+  .demo-caption {
+    margin: 18px 0 0;
+    font-size: var(--fs-body);
+    color: var(--muted);
+    max-width: 70ch;
+    text-wrap: pretty;
+  }
+  .demo-caption b { color: var(--text-2); font-weight: 500; }
+
+  kbd {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-bottom-width: 2px;
+    padding: 2px 6px;
+    border-radius: 5px;
+    color: var(--text);
+    white-space: nowrap;
   }
 
-  /* Install walkthrough */
-  .install {
-    border-top: 1px solid var(--border);
-    padding: 64px 0;
-  }
-  .install-title {
+  /* =====================================================================
+     Section heads
+     ===================================================================== */
+  .section { border-top: 1px solid var(--border); padding-block: var(--section-y); }
+  .section-head { max-width: 720px; margin: 0 0 48px; }
+  .kicker {
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
+    font-size: var(--fs-label);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--muted);
-    margin: 0 0 28px;
+    margin: 0 0 14px;
   }
-  .install-tabs {
-    display: inline-flex;
-    gap: 4px;
-    padding: 4px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 32px;
-  }
-  .install-tab {
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid transparent;
-    color: var(--muted);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: color 0.15s, background 0.15s, border-color 0.15s;
-  }
-  .install-tab:hover { color: var(--text-2); }
-  .install-tab.is-active {
-    background: var(--surface-2);
-    border-color: var(--border-2);
-    color: var(--text);
-  }
-  .install-steps {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .install-steps.is-hidden { display: none; }
-  .install-steps li {
-    display: grid;
-    grid-template-columns: 48px 1fr;
-    gap: 20px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-  }
-  .install-steps li:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
-    margin-bottom: 0;
-  }
-  .step-num {
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    padding-top: 2px;
-  }
-  .step-body h4 {
+  .section-head h2 {
     font-family: var(--sans);
-    font-size: 16px;
+    font-size: var(--fs-h2);
     font-weight: 600;
-    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0 0 14px;
     color: var(--text);
-    letter-spacing: -0.005em;
+    text-wrap: balance;
   }
-  .step-body p {
-    font-size: 14px;
+  .section-head p {
+    font-size: var(--fs-lead);
     line-height: 1.6;
     color: var(--text-2);
     margin: 0;
+    max-width: 62ch;
+    text-wrap: pretty;
   }
-  .step-body p + p { margin-top: 10px; }
-  .step-body .step-note {
-    font-size: 13px;
-    color: var(--muted);
-  }
-  .step-body code {
-    font-family: var(--mono);
-    font-size: 0.9em;
-    background: var(--surface);
+
+  /* =====================================================================
+     Feature bento
+     ===================================================================== */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+    background: var(--border);
     border: 1px solid var(--border);
-    padding: 1px 6px;
-    border-radius: 4px;
-    color: var(--text-2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
   }
-  .step-body strong {
+  .bento > * { grid-column: span 2; }
+  /* The two that answer "what is this for" carry the row on their own. */
+  .bento > .is-lead { grid-column: span 3; }
+
+  @media (max-width: 900px) {
+    .bento { grid-template-columns: repeat(2, 1fr); }
+    .bento > *, .bento > .is-lead { grid-column: span 1; }
+  }
+  @media (max-width: 600px) {
+    .bento { grid-template-columns: 1fr; }
+  }
+
+  .feature {
+    position: relative;
+    background: var(--bg);
+    padding: 32px 28px;
+    transition: background 0.15s var(--ease);
+  }
+  @media (hover: hover) {
+    .feature:hover { background: var(--surface); }
+    .feature:hover .feature-icon { border-color: currentColor; }
+  }
+  .is-lead { padding: 36px 32px; }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    transition: border-color 0.15s var(--ease);
+  }
+  .feature-icon svg { width: 20px; height: 20px; display: block; }
+
+  .feature-tag {
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    display: block;
+  }
+  .feature h3 {
+    font-family: var(--sans);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    margin: 0 0 10px;
     color: var(--text);
-    font-weight: 500;
+    text-wrap: balance;
   }
-  @media (max-width: 520px) {
-    .install-steps li {
-      grid-template-columns: 32px 1fr;
-      gap: 14px;
-    }
-  }
-
-  /* Footer */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 36px 0 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-  }
-  footer a {
+  .feature p {
+    font-size: var(--fs-body);
+    line-height: 1.6;
     color: var(--text-2);
-    transition: color 0.15s;
+    margin: 0;
+    text-wrap: pretty;
   }
-  footer a:hover { color: var(--text); }
-  footer .footer-right { display: flex; gap: 20px; }
 
-  /* Hero trust line — sits under the CTA row, answers "is this safe?" immediately */
-  .hero-trust {
-    font-family: var(--mono);
-    font-size: 12.5px;
-    color: var(--muted);
-    margin: 20px 0 0;
-    letter-spacing: 0.01em;
-  }
-  .hero-trust b { color: var(--text-2); font-weight: 500; }
+  .feature[data-tint="drag"]    { --tint: var(--tint-drag); }
+  .feature[data-tint="stack"]   { --tint: var(--tint-stack); }
+  .feature[data-tint="prompt"]  { --tint: var(--tint-prompt); }
+  .feature[data-tint="extract"] { --tint: var(--tint-extract); }
+  .feature[data-tint="palette"] { --tint: var(--tint-palette); }
+  .feature[data-tint="session"] { --tint: var(--tint-session); }
+  .feature[data-tint="speed"]   { --tint: var(--tint-speed); }
+  .feature[data-tint="safe"]    { --tint: var(--safe); }
+  .feature-icon, .feature-tag { color: var(--tint, var(--muted)); }
 
-  /* Mid-page CTA — the download option shouldn't only exist at the two ends
-     of the page, so it recurs once the features have made their case. */
+  /* =====================================================================
+     Mid-page CTA
+     ===================================================================== */
   .inline-cta {
     margin-top: 40px;
     padding: 26px 30px;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     background: var(--surface);
     display: flex;
     align-items: center;
@@ -512,98 +687,169 @@
   }
   .inline-cta p {
     margin: 0;
-    font-size: 15.5px;
+    font-size: var(--fs-lead);
     color: var(--text-2);
   }
 
-  /* Section intros — used above the features, trust and download grids */
-  .section-head { max-width: 56ch; margin: 0 0 40px; }
-  .section-head .kicker {
+  /* =====================================================================
+     Numbered steps
+     ===================================================================== */
+  .steps { list-style: none; padding: 0; margin: 0; max-width: 680px; }
+  .steps.is-hidden { display: none; }
+  .steps li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .steps li:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  .step-num {
     font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-size: var(--fs-sm);
+    font-weight: 500;
     color: var(--muted);
-    margin: 0 0 12px;
+    padding-top: 3px;
+    font-variant-numeric: tabular-nums;
   }
-  .section-head h2 {
+  .step-body h3 {
     font-family: var(--sans);
-    font-size: clamp(24px, 3.2vw, 32px);
+    font-size: var(--fs-h4);
     font-weight: 600;
-    letter-spacing: -0.015em;
-    line-height: 1.15;
-    margin: 0 0 12px;
+    margin: 0 0 8px;
     color: var(--text);
+    letter-spacing: -0.005em;
   }
-  .section-head p {
-    font-size: 15.5px;
+  .step-body p {
+    font-size: var(--fs-body);
     line-height: 1.6;
     color: var(--text-2);
     margin: 0;
+    text-wrap: pretty;
   }
-  .download .section-head,
-  .trust .section-head { margin-left: auto; margin-right: auto; text-align: center; }
+  .step-body p + p { margin-top: 10px; }
+  .step-body .step-note { font-size: var(--fs-sm); color: var(--muted); }
+  .step-body code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--text-2);
+  }
+  .step-body strong { color: var(--text); font-weight: 500; }
+  @media (max-width: 520px) {
+    .steps li { grid-template-columns: 32px 1fr; gap: 14px; }
+  }
 
-  /* Trust — reuses the .feature card, one consistent color instead of the
-     features grid's variety, so this section reads as a single unified claim */
-  .trust { border-top: 1px solid var(--border); padding: 80px 0; }
+  /* =====================================================================
+     Tabs
+     ===================================================================== */
+  .tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    /* Concentric: outer 10 = inner 6 + 4 padding. */
+    border-radius: 10px;
+    margin-bottom: 36px;
+  }
+  .tab {
+    font-family: var(--mono);
+    font-size: var(--fs-sm);
+    padding: 9px 18px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: color 0.15s var(--ease), background 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  @media (hover: hover) { .tab:hover { color: var(--text-2); } }
+  .tab[aria-selected="true"] {
+    background: var(--surface-2);
+    border-color: var(--border-2);
+    color: var(--text);
+  }
 
-  /* Download — the page's actual conversion point, reached directly from the nav */
-  .download { border-top: 1px solid var(--border); padding: 80px 0; text-align: center; }
+  /* =====================================================================
+     Download
+     ===================================================================== */
   .download-grid {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 14px;
-    flex-wrap: wrap;
     margin-bottom: 28px;
   }
   .btn-secondary {
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 5px;
-    padding: 16px 22px;
+    gap: 6px;
+    padding: 20px 22px;
     border: 1px solid var(--border-2);
-    border-radius: 10px;
-    min-width: 190px;
-    text-align: left;
-    transition: border-color 0.15s, background 0.15s, transform 0.12s ease;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    transition: border-color 0.15s var(--ease), background 0.15s var(--ease), scale 0.12s var(--ease);
   }
-  .btn-secondary:hover { border-color: var(--text-2); background: var(--surface); }
-  .btn-secondary:active { transform: translateY(1px); }
+  @media (hover: hover) {
+    .btn-secondary:hover { border-color: var(--text-2); background: var(--surface-2); }
+  }
+  .btn-secondary:active { scale: 0.96; }
   .btn-secondary .platform {
     font-family: var(--sans);
-    font-size: 15px;
+    font-size: var(--fs-h4);
     font-weight: 600;
     color: var(--text);
   }
   .btn-secondary .filetype {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: var(--fs-sm);
     color: var(--muted);
   }
+  .btn-secondary .note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-family: var(--mono);
+    font-size: var(--fs-sm);
+    color: var(--muted);
+  }
+  .btn-secondary .note svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .btn-secondary .note.is-verified { color: var(--safe); }
+
   .download-note {
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     color: var(--muted);
-    max-width: 58ch;
-    margin: 0 auto;
-    line-height: 1.6;
+    max-width: 68ch;
+    margin: 0;
+    line-height: 1.7;
   }
   .download-note b { color: var(--text-2); font-weight: 500; }
 
-  /* Download feedback.
+  /* =====================================================================
+     Download feedback.
      A release asset is a 90MB cross-origin file behind two redirects, so a
      plain link navigates the whole page and leaves it spinning for a second
      or more before the browser works out it was a download all along —
      Safari can sit there indefinitely. The script hands the fetch to a hidden
      iframe instead, which means nothing visible happens at all. This is what
-     tells the person their click worked. */
+     tells the person their click worked.
+     ===================================================================== */
   .dl-toast {
     position: fixed;
     left: 50%;
-    bottom: 28px;
-    transform: translate(-50%, 24px);
+    bottom: max(28px, env(safe-area-inset-bottom));
+    translate: -50% 24px;
     z-index: 60;
     display: flex;
     align-items: flex-start;
@@ -611,29 +857,36 @@
     max-width: min(560px, calc(100vw - 32px));
     padding: 16px 20px;
     border: 1px solid var(--border-2);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     background: var(--surface-2);
     box-shadow: 0 20px 50px -20px rgba(0,0,0,0.9);
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.8, 0.3, 1);
+    transition: opacity 0.22s var(--ease), translate 0.22s var(--ease), visibility 0s linear 0.22s;
   }
-  .dl-toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .dl-toast.show {
+    opacity: 1;
+    visibility: visible;
+    translate: -50% 0;
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
 
   .dl-toast-mark {
     flex-shrink: 0;
     width: 26px; height: 26px;
     border-radius: 50%;
     border: 2px solid var(--border-2);
-    border-top-color: var(--tint-url);
+    border-top-color: var(--safe);
     animation: dl-spin 0.8s linear infinite;
     margin-top: 1px;
   }
-  @keyframes dl-spin { to { transform: rotate(360deg); } }
+  @keyframes dl-spin { to { rotate: 360deg; } }
   .dl-toast.done .dl-toast-mark {
     animation: none;
-    border-color: var(--tint-url);
-    background: var(--tint-url);
+    border-color: var(--safe);
+    background: var(--safe);
     position: relative;
   }
   .dl-toast.done .dl-toast-mark::after {
@@ -643,7 +896,7 @@
     width: 6px; height: 11px;
     border: solid var(--bg);
     border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+    rotate: 45deg;
   }
 
   .dl-toast-body { min-width: 0; font-size: 14px; line-height: 1.5; }
@@ -652,182 +905,325 @@
   .dl-toast-body a {
     color: var(--text-2);
     border-bottom: 1px dotted var(--border-2);
-    transition: color 0.15s, border-color 0.15s;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
   }
-  .dl-toast-body a:hover { color: var(--text); border-bottom-color: var(--text-2); }
+  @media (hover: hover) {
+    .dl-toast-body a:hover { color: var(--text); border-bottom-color: var(--text-2); }
+  }
   .dl-toast-close {
     flex-shrink: 0;
-    background: none; border: 0; cursor: pointer;
+    width: 28px; height: 28px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 0;
+    cursor: pointer;
     color: var(--muted);
     font-family: var(--mono);
     font-size: 16px;
     line-height: 1;
-    padding: 2px 4px;
-    transition: color 0.15s;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s var(--ease), background 0.15s var(--ease);
   }
-  .dl-toast-close:hover { color: var(--text); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .dl-toast { transition: opacity 0.01s; transform: translate(-50%, 0); }
-    .dl-toast-mark { animation: none; }
+  @media (hover: hover) {
+    .dl-toast-close:hover { color: var(--text); background: var(--accent-dim); }
   }
 
-  /* Reveal animation */
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+  /* =====================================================================
+     Footer
+     ===================================================================== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 0 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: var(--fs-sm);
+    color: var(--muted);
   }
-  .reveal { animation: rise 0.7s ease-out backwards; }
-  .r1 { animation-delay: 0.05s; }
-  .r2 { animation-delay: 0.15s; }
-  .r3 { animation-delay: 0.25s; }
-  .r4 { animation-delay: 0.35s; }
-  .r5 { animation-delay: 0.55s; }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal { animation: none; }
+  footer a { padding-block: 6px; }
+  footer .footer-right { display: flex; gap: 24px; }
+
+  /* =====================================================================
+     Reveal on scroll.
+     Opt-in: only the scripted page hides anything, and only when motion is
+     welcome. Everyone else gets the finished layout on first paint.
+     ===================================================================== */
+  @media (prefers-reduced-motion: no-preference) {
+    .js .reveal {
+      opacity: 0;
+      translate: 0 14px;
+      transition: opacity 0.6s var(--ease), translate 0.6s var(--ease);
+      transition-delay: var(--reveal-delay, 0ms);
+    }
+    .js .reveal.is-in { opacity: 1; translate: 0 0; }
   }
+
+  [id] { scroll-margin-top: 84px; }
 </style>
 
-<!-- Vercel Web Analytics -->
-<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<noscript>
+  <style>
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .hero-visual, .demo-frame { display: none; }
+    .demo-caption { margin-top: 0; }
+  </style>
+</noscript>
 </head>
 
 <body>
 
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <nav class="nav" aria-label="Primary">
+      <a href="/" class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#F8F4EC">
+              <rect x="56" y="50" width="88" height="20"/>
+              <rect x="56" y="50" width="20" height="40"/>
+              <rect x="56" y="90" width="88" height="20"/>
+              <rect x="124" y="110" width="20" height="40"/>
+              <rect x="56" y="130" width="88" height="20"/>
+            </g>
+          </svg>
+        </span>
+        Stash
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#sessions" class="nav-link-optional">Sessions</a>
+        <a href="#security">Security</a>
+        <a href="#download" class="nav-cta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
+          </svg>
+          Download
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
 <div class="container">
 
-  <nav class="nav reveal r1">
-    <a href="/" class="brand">
-      <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-          <g fill="#F8F4EC">
-            <rect x="56" y="50" width="88" height="20"/>
-            <rect x="56" y="50" width="20" height="40"/>
-            <rect x="56" y="90" width="88" height="20"/>
-            <rect x="124" y="110" width="20" height="40"/>
-            <rect x="56" y="130" width="88" height="20"/>
-          </g>
-        </svg>
-      </span>
-      Stash
-    </a>
-    <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#sessions">Sessions</a>
-      <a href="#security">Security</a>
-      <a href="#download" class="nav-cta">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
-        </svg>
-        Download
-      </a>
-    </div>
-  </nav>
-
   <section class="hero">
-    <p class="eyebrow reveal r2">macOS &amp; Windows</p>
+    <div class="hero-copy">
+      <p class="eyebrow reveal">macOS &amp; Windows</p>
 
-    <h1 class="reveal r2">
-      Stop bouncing between apps<br/>
-      <span class="accent">just to paste what you copied.</span>
-    </h1>
+      <h1 class="reveal" style="--reveal-delay: 60ms">
+        Stop bouncing between apps<br/>
+        <span class="accent">just to paste what you copied.</span>
+      </h1>
 
-    <p class="subhead reveal r3">
-      Stash keeps your last 100 copies one keystroke away, keeps each project's
-      clips in its own session, and pulls text and colour straight out of a
-      screenshot — no switching, no retyping, no losing the thing you copied
-      two minutes ago.
-    </p>
+      <p class="subhead reveal" style="--reveal-delay: 120ms">
+        Stash keeps your last 100 copies one keystroke away, keeps each project's
+        clips in its own session, and pulls text and colour straight out of a
+        screenshot — no switching, no retyping, no losing the thing you copied
+        two minutes ago.
+      </p>
 
-    <div class="cta-row reveal r4">
-      <a id="download-primary" class="btn btn-primary"
-         href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
-        </svg>
-        <span id="download-label">Download Stash</span>
-      </a>
-      <div class="other-downloads" id="download-alt">
-        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">Intel Mac</a>
-        <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">Windows</a>
+      <div class="cta-row reveal" style="--reveal-delay: 180ms">
+        <a id="download-primary" class="btn btn-primary"
+           href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
+          </svg>
+          <span id="download-label">Download Stash</span>
+        </a>
+        <div class="other-downloads" id="download-alt">
+          <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">Intel Mac</a>
+          <a href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">Windows</a>
+        </div>
       </div>
+
     </div>
 
-    <p class="hero-trust reveal r5">
-      Free · Works on macOS and Windows · Nothing you copy ever leaves your device
-    </p>
-  </section>
-
-  <section class="demo reveal r5">
-    <div class="demo-frame">
-      <div class="demo-chrome" aria-hidden="true">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="label">stash · clipboard history</span>
-      </div>
-      <div class="demo-content">
-        <video autoplay muted loop playsinline>
-          <source src="demo.mp4" type="video/mp4">
-        </video>
-      </div>
+    <div class="hero-visual reveal" style="--reveal-delay: 240ms" aria-hidden="true">
+      <video id="heroClip" muted loop playsinline preload="none" disablepictureinpicture>
+        <source src="hero-orbit.mp4" type="video/mp4">
+      </video>
     </div>
+
+    <ul class="hero-trust reveal" style="--reveal-delay: 300ms">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+          Free to use
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6l-8-3Z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+          <b>Signed and notarized</b>&nbsp;by Apple
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="4" y="10" width="16" height="11" rx="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+          </svg>
+          Nothing you copy leaves your device
+        </li>
+    </ul>
   </section>
 
-  <section class="features" id="features">
-    <div class="section-head">
+  <section class="demo">
+    <figure class="demo-figure reveal">
+      <div class="demo-frame">
+        <div class="demo-chrome" aria-hidden="true">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="label">stash · clipboard history</span>
+        </div>
+        <div class="demo-content">
+          <video id="demoClip" muted loop playsinline preload="none"
+                 aria-label="Screen recording of the Stash drawer: clips are searched, previewed and dragged into another app.">
+            <source src="demo.mp4" type="video/mp4">
+          </video>
+          <button class="media-toggle" id="demoToggle" type="button"
+                  aria-pressed="false" aria-controls="demoClip" aria-label="Pause the demo">
+            <span class="icon-wrap" aria-hidden="true">
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5v14M15 5v14"/>
+              </svg>
+              <svg class="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 4.5v15l12-7.5-12-7.5Z"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+      <figcaption class="demo-caption">
+        <b>One shortcut, the whole history.</b> <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>V</kbd>
+        slides the drawer in from the edge of the screen — search it, preview a clip,
+        drag it straight into the app you were already working in. <kbd>⌘</kbd>
+        <kbd>⇧</kbd> <kbd>Space</kbd> pops the last five open right at your cursor.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="features">
+    <div class="section-head reveal">
       <p class="kicker">What Stash does</p>
       <h2>More than a clipboard — a place things you copy actually stay useful</h2>
       <p>Eight ways Stash earns the shortcut you'll use fifty times a day.</p>
     </div>
-    <div class="features-grid">
-      <div class="feature" data-tint="url">
+
+    <div class="bento">
+      <div class="feature is-lead reveal" data-tint="drag">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 4h4a2 2 0 0 1 2 2v4"/>
+            <path d="M20 6l-8 8"/>
+            <path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/>
+          </svg>
+        </span>
         <span class="feature-tag">drag</span>
         <h3>Drag straight into any app</h3>
         <p>Pull a clip out of Stash and drop it directly into VS Code, Figma, Notion — anywhere that accepts text or images. No copy-paste round-trip.</p>
       </div>
-      <div class="feature" data-tint="stack">
+
+      <div class="feature is-lead reveal" data-tint="stack" style="--reveal-delay: 80ms">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3 9 5-9 5-9-5 9-5Z"/>
+            <path d="m3 13 9 5 9-5"/>
+            <path d="m3 17.5 9 5 9-5"/>
+          </svg>
+        </span>
         <span class="feature-tag">stack</span>
         <h3>Gather a stack, drop it in one go</h3>
         <p>⌘-click a handful of clips — screenshots, snippets, whatever — and drag the whole stack into Figma, an AI chat, or a folder. Everything lands at once.</p>
       </div>
-      <div class="feature" data-tint="prompt">
+
+      <div class="feature reveal" data-tint="prompt">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v18M3 12h18"/>
+            <path d="m5.6 5.6 12.8 12.8M18.4 5.6 5.6 18.4"/>
+          </svg>
+        </span>
         <span class="feature-tag">prompts</span>
         <h3>Build a prompt library that doesn't age out</h3>
         <p>Mark a clip once and it's permanent — tagged, searchable, and never pushed out by the next hundred things you copy.</p>
       </div>
-      <div class="feature" data-tint="img">
+
+      <div class="feature reveal" data-tint="extract" style="--reveal-delay: 80ms">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="2"/>
+            <path d="M7 9h10M7 13h7M7 17h4"/>
+          </svg>
+        </span>
         <span class="feature-tag">extract</span>
         <h3>Pull text out of any screenshot</h3>
         <p>Copy an image, hit extract, and pick out just the text you need — read by the same engine as macOS and Windows themselves, not a bundled guess.</p>
       </div>
-      <div class="feature" data-tint="color">
+
+      <div class="feature reveal" data-tint="palette" style="--reveal-delay: 160ms">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3c5 0 9 3.6 9 8 0 2.5-2 4-4 4h-1.5a1.75 1.75 0 0 0-1.2 3 1.75 1.75 0 0 1-1.3 3c-5 0-9-3.6-9-8s4-10 8-10Z"/>
+            <circle cx="8.5" cy="10.5" r="1"/>
+            <circle cx="12.5" cy="7.5" r="1"/>
+            <circle cx="16.5" cy="10.5" r="1"/>
+          </svg>
+        </span>
         <span class="feature-tag">colour</span>
         <h3>Lift the palette out of any image</h3>
         <p>Press colour on a screenshot or a photo and get what it's actually made of — every swatch with its hex, ready to copy. No eyedropper, no guessing at a gradient.</p>
       </div>
-      <div class="feature" data-tint="session">
+
+      <div class="feature reveal" data-tint="session">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8V6a2 2 0 0 1 2-2h3.5l2 2.5H19a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z"/>
+            <path d="M3 11h18"/>
+          </svg>
+        </span>
         <span class="feature-tag">sessions</span>
         <h3>Keep each project's clips apart</h3>
         <p>Name a session, set it collecting, and everything you copy lands there instead of the general pile. Switch between them as you switch projects — each one keeps its own clips, across restarts.</p>
       </div>
-      <div class="feature" data-tint="code">
+
+      <div class="feature reveal" data-tint="safe" style="--reveal-delay: 80ms">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6l-8-3Z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </span>
         <span class="feature-tag">secure</span>
         <h3>Skips secrets automatically</h3>
         <p>API keys, JWTs, and credit card numbers are detected and excluded from history before they're ever stored. Stops accidental leaks during screen-shares.</p>
       </div>
-      <div class="feature" data-tint="speed">
+
+      <div class="feature reveal" data-tint="speed" style="--reveal-delay: 160ms">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>
+          </svg>
+        </span>
         <span class="feature-tag">fast</span>
         <h3>One shortcut, gone in a flash</h3>
         <p>Cmd+Shift+V opens the drawer, picks the clip, closes itself. No window to manage, no app to alt-tab to, no flow broken.</p>
       </div>
     </div>
 
-    <div class="inline-cta">
+    <div class="inline-cta reveal">
       <p>Free, and it takes about a minute to set up.</p>
       <a id="download-mid" class="btn btn-primary"
          href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14"/>
         </svg>
         <span id="download-mid-label">Download Stash</span>
@@ -835,8 +1231,8 @@
     </div>
   </section>
 
-  <section class="install" id="sessions">
-    <div class="section-head">
+  <section class="section" id="sessions">
+    <div class="section-head reveal">
       <p class="kicker">Sessions</p>
       <h2>Three projects open at once, and none of their clips in each other's way</h2>
       <p>Most days aren't one job. A session is a named place for one project's
@@ -844,49 +1240,69 @@
         doesn't fill up with the deck you're also writing.</p>
     </div>
 
-    <ol class="install-steps">
-      <li>
+    <ol class="steps">
+      <li class="reveal">
         <span class="step-num">01</span>
         <div class="step-body">
-          <h4>Name a session for what you're working on</h4>
+          <h3>Name a session for what you're working on</h3>
           <p>One per client, per feature, per deck — however you already think about your work.</p>
         </div>
       </li>
-      <li>
+      <li class="reveal" style="--reveal-delay: 80ms">
         <span class="step-num">02</span>
         <div class="step-body">
-          <h4>Set it collecting, then just work</h4>
+          <h3>Set it collecting, then just work</h3>
           <p>Everything you copy lands in that session instead of the general pile. No filing, no dragging things into folders afterwards — you copy the way you already do.</p>
         </div>
       </li>
-      <li>
+      <li class="reveal" style="--reveal-delay: 160ms">
         <span class="step-num">03</span>
         <div class="step-body">
-          <h4>Switch projects, switch sessions</h4>
+          <h3>Switch projects, switch sessions</h3>
           <p>Each one keeps its own clips — including its images — through quits and restarts. Come back next week and the references you gathered are still sitting together.</p>
         </div>
       </li>
     </ol>
   </section>
 
-  <section class="trust" id="security">
-    <div class="section-head">
+  <section class="section" id="security">
+    <div class="section-head reveal">
       <p class="kicker">Security &amp; privacy</p>
       <h2>Built to be trusted with what you copy</h2>
       <p>Stash runs entirely on your machine. Here's exactly what that means.</p>
     </div>
-    <div class="features-grid">
-      <div class="feature" data-tint="url">
+    <div class="bento">
+      <div class="feature reveal" data-tint="safe">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="7" width="18" height="12" rx="2"/>
+            <path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/>
+            <path d="M8 12h8"/>
+          </svg>
+        </span>
         <span class="feature-tag">memory</span>
         <h3>Ordinary history never touches disk</h3>
         <p>What you copy lives in memory and clears the moment you quit. Only the clips you deliberately pin, and the prompts you save, are ever written down.</p>
       </div>
-      <div class="feature" data-tint="url">
+      <div class="feature reveal" data-tint="safe" style="--reveal-delay: 80ms">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="13" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+            <path d="m8.5 10.5 2 2 4-4"/>
+          </svg>
+        </span>
         <span class="feature-tag">local</span>
         <h3>Nothing you copy ever leaves your device</h3>
         <p>Regular history lives in memory only and clears the moment you quit. Pinned clips and prompts are saved to one file on your own machine — never uploaded, never synced to a server.</p>
       </div>
-      <div class="feature" data-tint="url">
+      <div class="feature reveal" data-tint="safe" style="--reveal-delay: 160ms">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6h16M4 12h9M4 18h6"/>
+            <path d="m16.5 14.5 5 5m0-5-5 5"/>
+          </svg>
+        </span>
         <span class="feature-tag">filtered</span>
         <h3>Secrets never make it into history</h3>
         <p>API keys, JWTs, AWS credentials, 2FA codes and credit card numbers are detected and silently skipped before they're ever stored — so a screen-share can't leak what you just copied.</p>
@@ -894,52 +1310,80 @@
     </div>
   </section>
 
-  <section class="download" id="download">
-    <div class="section-head">
+  <section class="section" id="download">
+    <div class="section-head reveal">
       <p class="kicker">Get Stash</p>
       <h2>Download for your platform</h2>
       <p>Free to use. Pick the build that matches your machine.</p>
     </div>
-    <div class="download-grid">
+    <div class="download-grid reveal">
       <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-arm64.dmg">
         <span class="platform">Mac · Apple Silicon</span>
         <span class="filetype">.dmg · M1 and later</span>
+        <span class="note is-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6l-8-3Z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+          Notarized — opens with no warning
+        </span>
       </a>
       <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-mac-x64.dmg">
         <span class="platform">Mac · Intel</span>
         <span class="filetype">.dmg</span>
+        <span class="note is-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6l-8-3Z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+          Notarized — opens with no warning
+        </span>
       </a>
       <a class="btn-secondary" href="https://github.com/harikrsh10/Stash/releases/latest/download/Stash-win-x64.exe">
         <span class="platform">Windows</span>
         <span class="filetype">.exe · 10 and 11</span>
+        <span class="note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 8v5M12 16h.01"/>
+          </svg>
+          Not signed yet — see the two-click step below
+        </span>
       </a>
     </div>
     <p class="download-note">
       On Windows, SmartScreen will interrupt the first run —
-      click <b>More info</b> → <b>Run anyway</b> to continue.
+      click <b>More info</b> → <b>Run anyway</b> to continue. The source is on
+      <a class="prose-link" href="https://github.com/harikrsh10/Stash" target="_blank" rel="noopener">GitHub</a>
+      if you'd rather read it or build it yourself first.
     </p>
   </section>
 
-  <section class="install" id="walkthrough">
-    <p class="install-title">First-run walkthrough</p>
-
-    <div class="install-tabs" role="tablist">
-      <button class="install-tab is-active" role="tab" data-os="mac" aria-selected="true">macOS</button>
-      <button class="install-tab" role="tab" data-os="win" aria-selected="false">Windows</button>
+  <section class="section" id="walkthrough">
+    <div class="section-head reveal">
+      <p class="kicker">First run</p>
+      <h2>From download to first paste, in about a minute</h2>
     </div>
 
-    <ol class="install-steps" data-os="mac">
+    <div class="tabs" role="tablist" aria-label="Choose your platform">
+      <button class="tab" id="tab-mac" type="button" role="tab"
+              data-os="mac" aria-selected="true" aria-controls="panel-mac" tabindex="0">macOS</button>
+      <button class="tab" id="tab-win" type="button" role="tab"
+              data-os="win" aria-selected="false" aria-controls="panel-win" tabindex="-1">Windows</button>
+    </div>
+
+    <ol class="steps" id="panel-mac" role="tabpanel" aria-labelledby="tab-mac" data-os="mac" tabindex="0">
       <li>
         <span class="step-num">01</span>
         <div class="step-body">
-          <h4>Open the downloaded <code>.dmg</code></h4>
+          <h3>Open the downloaded <code>.dmg</code></h3>
           <p>Double-click the file in your Downloads folder. When the window opens, drag the Stash icon into the Applications folder.</p>
         </div>
       </li>
       <li>
         <span class="step-num">02</span>
         <div class="step-body">
-          <h4>Open Stash from Applications</h4>
+          <h3>Open Stash from Applications</h3>
           <p>Double-click <strong>Stash</strong> to launch it. It appears in your menu bar and starts keeping your clipboard right away.</p>
           <p class="step-note">Upgrading from an older build and using auto-paste? Remove Stash under System Settings → Privacy &amp; Security → Accessibility and add it back.</p>
         </div>
@@ -947,24 +1391,24 @@
       <li>
         <span class="step-num">03</span>
         <div class="step-body">
-          <h4>Press <code>⌘ + Shift + V</code> to open Stash</h4>
+          <h3>Press <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>V</kbd> to open Stash</h3>
           <p>Stash lives in your menu bar. Use the shortcut from anywhere to slide the drawer in, then drag clips into your apps.</p>
         </div>
       </li>
     </ol>
 
-    <ol class="install-steps is-hidden" data-os="win">
+    <ol class="steps is-hidden" id="panel-win" role="tabpanel" aria-labelledby="tab-win" data-os="win" tabindex="0">
       <li>
         <span class="step-num">01</span>
         <div class="step-body">
-          <h4>Run <code>Stash-win-x64.exe</code></h4>
+          <h3>Run <code>Stash-win-x64.exe</code></h3>
           <p>Double-click the installer in your Downloads folder. Windows will install Stash and add it to your Start menu.</p>
         </div>
       </li>
       <li>
         <span class="step-num">02</span>
         <div class="step-body">
-          <h4>Bypass the SmartScreen warning</h4>
+          <h3>Get past the SmartScreen warning</h3>
           <p>Windows may show a blue <strong>"Windows protected your PC"</strong> prompt. Click <code>More info</code>, then <code>Run anyway</code> to continue.</p>
           <p class="step-note">This happens because Stash isn't code-signed yet. The source is on GitHub if you want to inspect or build it yourself.</p>
         </div>
@@ -972,33 +1416,40 @@
       <li>
         <span class="step-num">03</span>
         <div class="step-body">
-          <h4>Press <code>Ctrl + Shift + V</code> to open Stash</h4>
+          <h3>Press <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd> to open Stash</h3>
           <p>Stash lives in your system tray. Use the shortcut from anywhere to slide the drawer in, then drag clips into your apps.</p>
         </div>
       </li>
     </ol>
   </section>
 
-  <div class="dl-toast" id="dlToast" role="status" aria-live="polite">
-    <span class="dl-toast-mark" aria-hidden="true"></span>
-    <div class="dl-toast-body">
-      <strong id="dlToastTitle">Starting your download…</strong>
-      <span id="dlToastNote">It should appear in your Downloads folder in a moment.</span>
-    </div>
-    <button class="dl-toast-close" id="dlToastClose" type="button" aria-label="Dismiss">×</button>
-  </div>
+</div>
+</main>
 
+<div class="dl-toast" id="dlToast" role="status" aria-live="polite">
+  <span class="dl-toast-mark" aria-hidden="true"></span>
+  <div class="dl-toast-body">
+    <strong id="dlToastTitle"></strong>
+    <span id="dlToastNote"></span>
+  </div>
+  <button class="dl-toast-close" id="dlToastClose" type="button" aria-label="Dismiss">×</button>
+</div>
+
+<div class="container">
   <footer>
-    <div>Stash · built by <a href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></div>
+    <div>Stash · built by <a class="prose-link" href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></div>
     <div class="footer-right">
-      <a href="https://github.com/harikrsh10/Stash" target="_blank" rel="noopener">Source</a>
-      <a href="https://github.com/harikrsh10/Stash/issues" target="_blank" rel="noopener">Report an issue</a>
+      <a class="prose-link" href="https://github.com/harikrsh10/Stash" target="_blank" rel="noopener">Source</a>
+      <a class="prose-link" href="https://github.com/harikrsh10/Stash/issues" target="_blank" rel="noopener">Report an issue</a>
     </div>
   </footer>
-
 </div>
 
 <script>
+  var REDUCED = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : { matches: false, addEventListener: null };
+
   // Downloads.
   //
   // A release asset is ~90MB on another origin, behind two redirects. Following
@@ -1024,6 +1475,10 @@
       toast.classList.remove('show', 'done');
       clearTimeout(hideTimer);
       clearTimeout(doneTimer);
+      // Empty again between announcements. A polite region that still holds its
+      // last message can skip the next identical one entirely.
+      title.textContent = '';
+      note.textContent = '';
     }
     if (closeBtn) closeBtn.addEventListener('click', hide);
 
@@ -1156,21 +1611,21 @@
     }
   })();
 
-  // Install walkthrough tabs — default to user's OS, allow manual switch
+  // Platform tabs, following the APG pattern: arrows move and activate, Home
+  // and End jump to the ends, and only the selected tab is in the tab order.
   (function() {
-    // Scoped to the walkthrough: this hides any panel whose data-os doesn't
-    // match, so a step list elsewhere on the page would vanish on load.
-    var walkthrough = document.getElementById('walkthrough');
-    if (!walkthrough) return;
-    var tabs = walkthrough.querySelectorAll('.install-tab');
-    var panels = walkthrough.querySelectorAll('.install-steps');
+    var root = document.getElementById('walkthrough');
+    if (!root) return;
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    var panels = Array.prototype.slice.call(root.querySelectorAll('[role="tabpanel"]'));
     if (!tabs.length || !panels.length) return;
 
-    function activate(os) {
+    function activate(os, moveFocus) {
       tabs.forEach(function(t) {
         var on = t.dataset.os === os;
-        t.classList.toggle('is-active', on);
         t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        if (on && moveFocus) t.focus();
       });
       panels.forEach(function(p) {
         p.classList.toggle('is-hidden', p.dataset.os !== os);
@@ -1178,12 +1633,131 @@
     }
 
     var platform = navigator.platform || '';
-    var defaultOs = /Mac/i.test(platform) ? 'mac' : (/Win/i.test(platform) ? 'win' : 'mac');
-    activate(defaultOs);
+    activate(/Win/i.test(platform) ? 'win' : 'mac', false);
 
-    tabs.forEach(function(t) {
-      t.addEventListener('click', function() { activate(t.dataset.os); });
+    tabs.forEach(function(t, i) {
+      t.addEventListener('click', function() { activate(t.dataset.os, false); });
+      t.addEventListener('keydown', function(e) {
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = tabs[(i + 1) % tabs.length];
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === 'Home') next = tabs[0];
+        else if (e.key === 'End') next = tabs[tabs.length - 1];
+        if (!next) return;
+        e.preventDefault();
+        activate(next.dataset.os, true);
+      });
     });
+  })();
+
+  // Videos.
+  //
+  // Neither clip is loaded until it is on screen — together they are ~26MB, and
+  // fetching that during first paint costs the page its headline. Playback is
+  // also a preference: reduced motion means they stay on their first frame, and
+  // the demo keeps a real pause control either way.
+  (function() {
+    var hero = document.getElementById('heroClip');
+    var demo = document.getElementById('demoClip');
+    var toggle = document.getElementById('demoToggle');
+    var paused = REDUCED.matches;
+
+    function load(v) {
+      if (!v || v.dataset.loaded) return;
+      v.dataset.loaded = '1';
+      v.preload = 'auto';
+      v.load();
+    }
+
+    function play(v) {
+      if (!v || paused) return;
+      load(v);
+      var p = v.play();
+      if (p && p.catch) p.catch(function() {});
+    }
+
+    function setPaused(next) {
+      paused = next;
+      if (toggle) {
+        toggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        toggle.setAttribute('aria-label', paused ? 'Play the demo' : 'Pause the demo');
+      }
+      if (paused) {
+        if (hero) hero.pause();
+        if (demo) demo.pause();
+      } else {
+        play(hero);
+        play(demo);
+      }
+    }
+
+    // First frame only under reduced motion: something has to be visible, so
+    // the clip is loaded and seeked rather than left as an empty black box.
+    if (paused) {
+      [hero, demo].forEach(function(v) { if (v) { load(v); } });
+    }
+    setPaused(paused);
+
+    if (toggle) {
+      toggle.addEventListener('click', function() { setPaused(!paused); });
+    }
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) { load(entry.target); play(entry.target); }
+          else if (entry.target.pause) { entry.target.pause(); }
+        });
+      }, { rootMargin: '200px' });
+      [hero, demo].forEach(function(v) { if (v) io.observe(v); });
+    } else {
+      play(hero); play(demo);
+    }
+
+    if (REDUCED.addEventListener) {
+      REDUCED.addEventListener('change', function() { setPaused(REDUCED.matches); });
+    }
+  })();
+
+  // Reveal on scroll. Sections animate when they are reached rather than all at
+  // once on load, where the ones below the fold finish before anyone sees them.
+  (function() {
+    if (REDUCED.matches || !('IntersectionObserver' in window)) {
+      document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('is-in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        io.unobserve(entry.target);
+      });
+    });
+    var pending = document.querySelectorAll('.reveal');
+    pending.forEach(function(el) { io.observe(el); });
+
+    // Failsafe. An observer that never gets a second callback would otherwise
+    // leave whatever was below the fold at load invisible for good, so anything
+    // still hidden after the first stretch of the visit is simply shown.
+    setTimeout(function() {
+      pending.forEach(function(el) {
+        if (el.getBoundingClientRect().top < window.innerHeight * 1.5) {
+          el.classList.add('is-in');
+          io.unobserve(el);
+        }
+      });
+    }, 2500);
+  })();
+
+  // The header only earns a dividing line once there is something above it.
+  (function() {
+    var header = document.getElementById('siteHeader');
+    if (!header) return;
+    function sync() {
+      header.classList.toggle('is-scrolled', window.scrollY > 8);
+    }
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
   })();
 </script>
 
