@@ -831,14 +831,6 @@
      Meet
      ===================================================================== */
   .meet { text-align: center; }
-  .meet .not-anymore {
-    font-family: var(--mono);
-    font-size: var(--fs-sm);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 0 0 22px;
-  }
 
   /* =====================================================================
      Steps
@@ -1498,6 +1490,19 @@
     </ul>
   </section>
 
+  <!-- ===================== Meet ===================== -->
+  <section class="section wrap meet">
+    <div class="narrow reveal">
+      <h2 class="title">Meet <span class="ital is-plain">Stash</span></h2>
+      <p class="lead">
+        It sits in your menu bar and keeps what you copy &mdash; text, code, links,
+        images &mdash; until you need it. One keystroke brings the whole history
+        back, and everything in it can be dragged straight into the app you're
+        already working in.
+      </p>
+    </div>
+  </section>
+
   <!-- ===================== Demo ===================== -->
   <section class="demo wrap" id="how">
     <figure class="demo-figure reveal">
@@ -1525,20 +1530,6 @@
         <kbd>&#8679;</kbd> <kbd>Space</kbd> pops the last five open right at your cursor.
       </figcaption>
     </figure>
-  </section>
-
-  <!-- ===================== Meet ===================== -->
-  <section class="section wrap meet">
-    <div class="narrow reveal">
-      <p class="not-anymore">Not anymore</p>
-      <h2 class="title">Meet <span class="ital is-plain">Stash</span></h2>
-      <p class="lead">
-        It sits in your menu bar and keeps what you copy &mdash; text, code, links,
-        images &mdash; until you need it. One keystroke brings the whole history
-        back, and everything in it can be dragged straight into the app you're
-        already working in.
-      </p>
-    </div>
   </section>
 
   <!-- ===================== Features ===================== -->
@@ -2080,6 +2071,108 @@
     if (mid) {
       mid.href = primary.href;
       if (midLabel && label) midLabel.textContent = label.textContent;
+    }
+  })();
+
+  // Platform tabs, following the APG pattern: arrows move and activate, Home
+  // and End jump to the ends, and only the selected tab is in the tab order.
+  (function() {
+    var root = document.getElementById('walkthrough');
+    if (!root) return;
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    var panels = Array.prototype.slice.call(root.querySelectorAll('[role="tabpanel"]'));
+    if (!tabs.length || !panels.length) return;
+
+    function activate(os, moveFocus) {
+      tabs.forEach(function(t) {
+        var on = t.dataset.os === os;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        if (on && moveFocus) t.focus();
+      });
+      panels.forEach(function(p) {
+        p.classList.toggle('is-hidden', p.dataset.os !== os);
+      });
+    }
+
+    activate(/Win/i.test(navigator.platform || '') ? 'win' : 'mac', false);
+
+    tabs.forEach(function(t, i) {
+      t.addEventListener('click', function() { activate(t.dataset.os, false); });
+      t.addEventListener('keydown', function(e) {
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = tabs[(i + 1) % tabs.length];
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === 'Home') next = tabs[0];
+        else if (e.key === 'End') next = tabs[tabs.length - 1];
+        if (!next) return;
+        e.preventDefault();
+        activate(next.dataset.os, true);
+      });
+    });
+  })();
+
+  // Clips. Sources are attached only once each one is on the way into view,
+  // so neither costs the page its first paint. Reduced motion holds them on a
+  // frame, and each keeps a pause control regardless of the preference.
+  (function() {
+    var clips = [
+      { el: document.getElementById('demoClip'), btn: document.getElementById('demoToggle'), src: 'demo.mp4', what: 'demo' }
+    ].filter(function(c) { return c.el; });
+    if (!clips.length) return;
+
+    function load(c) {
+      if (c.el.dataset.loaded) return;
+      c.el.dataset.loaded = '1';
+      var s = document.createElement('source');
+      s.src = c.src;
+      s.type = 'video/mp4';
+      c.el.appendChild(s);
+      c.el.preload = 'auto';
+      c.el.load();
+    }
+
+    function play(c) {
+      load(c);
+      if (c.paused) return;
+      var p = c.el.play();
+      if (p && p.catch) p.catch(function() {});
+    }
+
+    function setPaused(c, next) {
+      c.paused = next;
+      if (c.btn) {
+        c.btn.setAttribute('aria-pressed', c.paused ? 'true' : 'false');
+        c.btn.setAttribute('aria-label', (c.paused ? 'Play the ' : 'Pause the ') + c.what);
+      }
+      if (c.paused) { c.el.pause(); } else { play(c); }
+    }
+
+    clips.forEach(function(c) {
+      setPaused(c, REDUCED.matches);
+      // Something has to be on screen under reduced motion, so the clip is
+      // still fetched and left showing its first frame rather than a black box.
+      if (c.paused) load(c);
+      if (c.btn) c.btn.addEventListener('click', function() { setPaused(c, !c.paused); });
+    });
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          var c = clips.filter(function(x) { return x.el === e.target; })[0];
+          if (!c) return;
+          if (e.isIntersecting) { play(c); } else { c.el.pause(); }
+        });
+      }, { rootMargin: '300px' });
+      clips.forEach(function(c) { io.observe(c.el); });
+    } else {
+      clips.forEach(play);
+    }
+
+    if (REDUCED.addEventListener) {
+      REDUCED.addEventListener('change', function() {
+        clips.forEach(function(c) { setPaused(c, REDUCED.matches); });
+      });
     }
   })();
 
