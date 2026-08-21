@@ -1312,6 +1312,21 @@
   }
   .foot-base a { color: var(--text-2); }
   @media (hover: hover) { .foot-base a:hover { color: var(--accent); } }
+  .foot-base-right { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .foot-social {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    color: var(--text-2);
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease), background 0.15s var(--ease);
+  }
+  .foot-social svg { width: 13px; height: 13px; flex-shrink: 0; }
+  @media (hover: hover) {
+    .foot-social:hover { color: var(--text); border-color: var(--line-2); background: var(--surface); }
+  }
 
   /* =====================================================================
      Toast
@@ -2115,7 +2130,15 @@
 
     <div class="foot-base">
       <span>&copy; Stash 2026</span>
-      <span>Built by <a href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></span>
+      <div class="foot-base-right">
+        <span>Built by <a href="https://github.com/harikrsh10" target="_blank" rel="noopener">HariKrish</a></span>
+        <a class="foot-social" href="https://x.com/Designr_Dude" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/>
+          </svg>
+          @Designr_Dude
+        </a>
+      </div>
     </div>
   </div>
 </footer>
