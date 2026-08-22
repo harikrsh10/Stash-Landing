@@ -1086,7 +1086,9 @@
     padding-block: var(--section-y);
     border-block-start: 1px solid var(--line);
   }
-  .finale .hero-actions { margin-top: 34px; }
+  /* The hero's row is left-aligned in a left-aligned column; here the whole
+     block is centred, so the row has to be told to follow it. */
+  .finale .hero-actions { margin-top: 34px; justify-content: center; }
 
   /* =====================================================================
      Footer
